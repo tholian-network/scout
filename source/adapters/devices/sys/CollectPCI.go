@@ -29,8 +29,8 @@ func CollectPCI() []structs.Device {
 					if subsystem_vendor != "" && subsystem_device != "" {
 
 						candidate := findSubsystemDevice(devices.Devices.QueryBySubsystem(matchers.Device{
-							Name: "any",
-							Bus: "pci",
+							Name:   "any",
+							Bus:    "pci",
 							Vendor: subsystem_vendor,
 							Device: subsystem_device,
 						}), vendor, device, subsystem_vendor, subsystem_device)
@@ -59,8 +59,8 @@ func CollectPCI() []structs.Device {
 					} else {
 
 						candidate := findSystemDevice(devices.Devices.QueryBySubsystem(matchers.Device{
-							Name: "any",
-							Bus: "pci",
+							Name:   "any",
+							Bus:    "pci",
 							Vendor: vendor,
 							Device: device,
 						}), vendor, device)

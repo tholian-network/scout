@@ -23,4 +23,3 @@ func findSubsystemDevice(candidates []*structs.Device, id_vendor string, id_devi
 	return result
 
 }
-

@@ -93,7 +93,6 @@ func CollectPackages() []structs.Package {
 			collected[c].ResolveDependencies(collected)
 		}
 
-
 	}
 
 	return collected

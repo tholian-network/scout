@@ -20,4 +20,3 @@ func findSystemDevice(candidates []*structs.Device, id_vendor string, id_device 
 	return result
 
 }
-

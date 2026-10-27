@@ -49,7 +49,7 @@ func Update(updates []structs.Update) ([]structs.Update, error) {
 
 				if index_prefix != -1 && index_suffix != -1 && index_suffix > index_prefix {
 
-					block := strings.TrimSpace(tmp2[index_prefix+len(block_prefix):index_suffix])
+					block := strings.TrimSpace(tmp2[index_prefix+len(block_prefix) : index_suffix])
 
 					if strings.HasPrefix(block, "(") && strings.Contains(block, ") ") {
 						block = strings.TrimSpace(block[strings.Index(block, ") ")+2:])

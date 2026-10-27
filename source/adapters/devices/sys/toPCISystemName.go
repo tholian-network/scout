@@ -8,8 +8,8 @@ func toPCISystemName(id_vendor string, id_device string) string {
 	var result string
 
 	candidates := devices.Devices.Query(matchers.Device{
-		Name: "any",
-		Bus: "pci",
+		Name:   "any",
+		Bus:    "pci",
 		Vendor: id_vendor,
 		Device: id_device,
 	})
@@ -30,4 +30,3 @@ func toPCISystemName(id_vendor string, id_device string) string {
 	return result
 
 }
-

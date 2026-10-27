@@ -52,11 +52,11 @@ func Init(console *structs.Console) *structs.System {
 	if system.Fingerprint.Timezone != "" {
 
 		candidates := countries.Countries.Query(matchers.Country{
-			Name: "any",
-			Continent: "any",
+			Name:       "any",
+			Continent:  "any",
 			Allegiance: "any",
-			Subnet: "any",
-			Timezone: system.Fingerprint.Timezone,
+			Subnet:     "any",
+			Timezone:   system.Fingerprint.Timezone,
 		})
 
 		if len(candidates) > 0 {

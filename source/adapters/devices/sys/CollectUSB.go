@@ -24,8 +24,8 @@ func CollectUSB() []structs.Device {
 				if vendor != "" && device != "" {
 
 					candidate := findSystemDevice(devices.Devices.Query(matchers.Device{
-						Name: "any",
-						Bus: "pci",
+						Name:   "any",
+						Bus:    "pci",
 						Vendor: vendor,
 						Device: device,
 					}), vendor, device)
