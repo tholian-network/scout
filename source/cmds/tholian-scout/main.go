@@ -122,13 +122,17 @@ func main() {
 
 		action = strings.ToLower(os.Args[1])
 
+		if os.Getenv("THOLIAN_REPORT") == "" {
+			os.Setenv("THOLIAN_REPORT", "/tmp/tholian-report.json")
+		}
+
 	} else if len(os.Args) == 3 && os.Args[1] == "collect" {
 
 		action = "collect"
 
 		if isReportPath(os.Args[2]) {
 
-			// "tholian-scout collect /tmp/report.json"
+			// "tholian-scout collect /tmp/tholian-report.json"
 			os.Setenv("THOLIAN_REPORT", os.Args[2])
 
 		} else {
@@ -228,17 +232,8 @@ func main() {
 
 				} else {
 
-					data, err0 := json.MarshalIndent(SYSTEM, "", "\t")
-
-					if err0 == nil {
-
-						console.Inspect(data)
-						os.Exit(0)
-
-					} else {
-						console.Error(err0.Error())
-						os.Exit(1)
-					}
+					console.Inspect(SYSTEM)
+					os.Exit(0)
 
 				}
 
