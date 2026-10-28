@@ -8,7 +8,7 @@ reports including all necessary data and writes them to an external file.
 
 ```bash
 # Build Dependencies
-sudo pacman -S --needed go;
+sudo pacman -S --needed go make;
 
 cd /path/to/tholian-network/scout;
 
@@ -19,6 +19,9 @@ make build;
 ## Testing
 
 ```bash
+# Test Dependencies
+sudo pacman -S --needed go make podman;
+
 cd /path/to/tholian-network/scout;
 
 # Formatting, vet, and unit tests
