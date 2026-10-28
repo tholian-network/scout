@@ -374,4 +374,3 @@ func ParsePackage(buffer string, result *structs.Package) {
 	}
 
 }
-

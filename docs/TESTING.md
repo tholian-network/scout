@@ -17,6 +17,7 @@ host inventory APIs.
 | `dpkg` | `debian:bookworm-slim` | `dpkg` | `apache2-bin` | `2.4.62-1~deb12u1` | not used | not tested | not tested | none |
 | `fedora` | `fedora:43` | `dnf` | `httpd-core` | `2.4.63-4.fc43` | `httpd` | `httpd-core` via `httpd` | `> 2.4.63-4.fc43` | `rpm -U --oldpackage` |
 | `opensuse` | `opensuse/leap:15.6` | `zypper` | `apache2-prefork` | `2.4.58-150600.3.1` | `httpd-prefork` | `apache2-prefork` via `httpd-prefork` | `> 2.4.58-150600.3.1` | `rpm -U --oldpackage` |
+| `openwrt` | `openwrt/rootfs:x86-64-openwrt-24.10` | `opkg` | `uhttpd` | `1.0` | not used | not tested | `> 1.0` | `opkg install` old `.ipk` |
 | `rockylinux` | `rockylinux:9` | `dnf` | `httpd-core` | `2.4.57-11.el9_4.1` | `httpd` | `httpd-core` via `httpd` | `> 2.4.57-11.el9_4.1` | `rpm -U --oldpackage` |
 | `rpm` | `almalinux:9-minimal` | `rpm` | `httpd-core` | `2.4.57-11.el9_4.1` | not used | not tested | not tested | none |
 
@@ -40,6 +41,7 @@ implement updates.
 | `dpkg` | `apache2-bin`, `apache2-data` | Debian snapshot `20240817T023924Z` |
 | `fedora` | `httpd`, `httpd-core`, `httpd-tools`, `mod_lua`, `httpd-filesystem` | Fedora Koji `httpd-2.4.63-4.fc43` |
 | `opensuse` | `apache2`, `apache2-prefork`, `apache2-utils` | openSUSE Leap 15.6 OSS repository |
+| `openwrt` | `uhttpd` `1.0` and `2.0` | Locally generated `.ipk` feed under `/var/cache/e2e/feed` |
 | `rockylinux` | `httpd`, `httpd-core`, `httpd-tools`, `mod_lua`, `httpd-filesystem` | Rocky Linux 9.4 vault AppStream |
 | `rpm` | `httpd`, `httpd-core`, `httpd-tools`, `mod_lua`, `httpd-filesystem` | AlmaLinux 9.4 vault AppStream |
 
@@ -71,6 +73,17 @@ The `dpkg` target verifies only:
 - `CollectPackages` reports `apache2-bin` at the pinned old version using the
   `dpkg` package manager, with `/usr/bin/apt` and `/usr/bin/apt-cache` removed.
 - `SearchPackages` finds `apache2-bin`.
+
+The `openwrt` target uses a locally generated two-version `uhttpd` `.ipk` feed
+so it does not depend on moving OpenWrt repositories. It verifies:
+
+- `CollectPackages` reports `uhttpd` at version `1.0` using the `opkg` package
+  manager.
+- `SearchPackages` finds `uhttpd`.
+- `CollectUpdates` reports a `uhttpd` update newer than `1.0`.
+- `SearchUpdates` finds the `uhttpd` update.
+
+Service, antique, and update-application tests are not run for `openwrt`.
 
 ## Running Tests
 

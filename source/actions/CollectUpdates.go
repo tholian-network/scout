@@ -4,6 +4,7 @@ import "tholian-core/structs"
 import "tholian-scout/adapters/packages/apk"
 import "tholian-scout/adapters/packages/apt"
 import "tholian-scout/adapters/packages/dnf"
+import "tholian-scout/adapters/packages/opkg"
 import "tholian-scout/adapters/packages/pacman"
 import "tholian-scout/adapters/packages/tdnf"
 import "tholian-scout/adapters/packages/zypper"
@@ -186,6 +187,33 @@ func CollectUpdates(console *structs.Console, system *structs.System) bool {
 		} else {
 
 			console.Warn("zypper.CollectUpdates(): Found 0 Updates")
+
+		}
+
+		system.SetUpdates(collected)
+		result = true
+
+	} else if opkg.SUPPORTED == true {
+
+		// openwrt
+
+		tmp := opkg.CollectUpdates()
+
+		if len(tmp) > 0 {
+
+			console.Info("opkg.CollectUpdate(): Found " + strconv.Itoa(len(tmp)) + " Updates")
+
+			for _, update := range tmp {
+
+				if update.IsValid() {
+					collected = append(collected, update)
+				}
+
+			}
+
+		} else {
+
+			console.Warn("opkg.CollectUpdates(): Found 0 Updates")
 
 		}
 

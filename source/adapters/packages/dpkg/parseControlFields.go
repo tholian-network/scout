@@ -34,4 +34,3 @@ func parseControlFields(buffer string) map[string]string {
 	return fields
 
 }
-

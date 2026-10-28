@@ -5,6 +5,7 @@ import "tholian-scout/adapters/packages/apk"
 import "tholian-scout/adapters/packages/apt"
 import "tholian-scout/adapters/packages/dnf"
 import "tholian-scout/adapters/packages/dpkg"
+import "tholian-scout/adapters/packages/opkg"
 import "tholian-scout/adapters/packages/pacman"
 import "tholian-scout/adapters/packages/rpm"
 import "tholian-scout/adapters/packages/tdnf"
@@ -219,6 +220,33 @@ func CollectPackages(console *structs.Console, system *structs.System) bool {
 		} else {
 
 			console.Warn("rpm.CollectPackages(): Found 0 Packages")
+
+		}
+
+		system.SetPackages(collected)
+		result = true
+
+	} else if opkg.SUPPORTED == true {
+
+		// openwrt
+
+		tmp := opkg.CollectPackages()
+
+		if len(tmp) > 0 {
+
+			console.Info("opkg.CollectPackages(): Found " + strconv.Itoa(len(tmp)) + " Packages")
+
+			for _, pkg := range tmp {
+
+				if pkg.IsValid() {
+					collected = append(collected, pkg)
+				}
+
+			}
+
+		} else {
+
+			console.Warn("opkg.CollectPackages(): Found 0 Packages")
 
 		}
 

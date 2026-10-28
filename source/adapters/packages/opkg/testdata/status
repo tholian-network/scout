@@ -1,0 +1,47 @@
+Package: libc
+Version: 1.2.5-r4
+Depends: libgcc1
+Provides: libc
+Status: install user installed
+Architecture: x86_64
+Installed-Time: 1700000000
+Description: C library
+
+Package: libgcc1
+Version: 13.3.0-r4
+Status: install user installed
+Architecture: x86_64
+Installed-Time: 1700000001
+Description: GCC support library
+
+Package: uhttpd
+Version: 2023-06-25-34a8a74d-1
+Depends: libc, libgcc1, libubox20230523 | libubox-lua, missingpkg
+Provides: webserver, httpd
+Replaces: old-uhttpd (<= 1.0)
+Conflicts: lighttpd
+Maintainer: OpenWrt Team <openwrt-devel@lists.openwrt.org>
+Homepage: https://openwrt.org/
+Status: install user installed
+Architecture: x86_64
+Installed-Time: 1700000002
+Description: HTTP server
+
+Package: ca-bundle
+Version: 20230311-1
+Status: install user installed
+Architecture: all
+Installed-Time: 1700000003
+Description: CA bundle
+
+Package: luci-i18n-base-de
+Version: git-24.123.45678
+Status: deinstall ok config-files
+Architecture: all
+Description: LuCI translation
+
+Package: half-installed
+Version: 1.0-1
+Status: install ok unpacked
+Architecture: x86_64
+Description: Not installed yet
