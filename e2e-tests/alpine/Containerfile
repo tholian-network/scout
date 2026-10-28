@@ -1,0 +1,31 @@
+FROM alpine:3.21
+
+RUN apk update && apk add --no-cache \
+    apache2 \
+    ca-certificates \
+    coreutils \
+    curl \
+    procps
+
+RUN mkdir -p /var/cache/e2e \
+    && curl -fsSL -o /var/cache/e2e/apache2-old.apk \
+        'https://dl-cdn.alpinelinux.org/alpine/v3.20/main/x86_64/apache2-2.4.67-r0.apk' \
+    && apk add --allow-untrusted --force-broken-world /var/cache/e2e/apache2-old.apk \
+    && apk update
+
+RUN printf 'e2e-alpine\n' > /etc/machine-id \
+    && ln -snf /usr/share/zoneinfo/UTC /etc/localtime
+
+COPY e2e-tests/alpine/entrypoint.sh /usr/local/bin/e2e-entrypoint
+COPY e2e-tests/alpine/reset.sh /usr/local/bin/e2e-reset
+RUN chmod +x /usr/local/bin/e2e-entrypoint /usr/local/bin/e2e-reset
+
+ENV E2E_PACKAGE=apache2
+ENV E2E_SERVICE=httpd
+ENV E2E_OLD_VERSION=2.4.67-r0
+ENV E2E_PACKAGE_MANAGER=apk
+ENV E2E_UPDATE_MANAGER=apk
+ENV E2E_RESET=/usr/local/bin/e2e-reset
+
+ENTRYPOINT ["/usr/local/bin/e2e-entrypoint"]
+CMD ["/tests/e2e", "-test.v"]

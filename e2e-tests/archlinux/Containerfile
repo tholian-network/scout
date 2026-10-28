@@ -1,0 +1,32 @@
+FROM archlinux:latest
+
+RUN pacman -Syu --noconfirm \
+    && pacman -S --noconfirm \
+        apache \
+        ca-certificates \
+        curl \
+        coreutils \
+        procps-ng
+
+RUN mkdir -p /var/cache/e2e \
+    && curl -fsSL -o /var/cache/e2e/apache-old.pkg.tar.zst \
+        'https://archive.archlinux.org/packages/a/apache/apache-2.4.62-1-x86_64.pkg.tar.zst' \
+    && pacman -U --noconfirm /var/cache/e2e/apache-old.pkg.tar.zst \
+    && pacman -Sy --noconfirm
+
+RUN printf 'e2e-archlinux\n' > /etc/machine-id \
+    && ln -snf /usr/share/zoneinfo/UTC /etc/localtime
+
+COPY e2e-tests/archlinux/entrypoint.sh /usr/local/bin/e2e-entrypoint
+COPY e2e-tests/archlinux/reset.sh /usr/local/bin/e2e-reset
+RUN chmod +x /usr/local/bin/e2e-entrypoint /usr/local/bin/e2e-reset
+
+ENV E2E_PACKAGE=apache
+ENV E2E_SERVICE=httpd
+ENV E2E_OLD_VERSION=2.4.62-1
+ENV E2E_PACKAGE_MANAGER=pacman
+ENV E2E_UPDATE_MANAGER=pacman
+ENV E2E_RESET=/usr/local/bin/e2e-reset
+
+ENTRYPOINT ["/usr/local/bin/e2e-entrypoint"]
+CMD ["/tests/e2e", "-test.v"]

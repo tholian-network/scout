@@ -21,8 +21,15 @@ make build;
 ```bash
 cd /path/to/tholian-network/scout;
 
+# Formatting, vet, and unit tests
+make check;
+
+# Containerized end-to-end tests (requires Podman)
 make test;
 ```
+
+`make test` builds `build/tests/<distribution>-<arch>`, builds the containers
+from `./e2e-tests/<distribution>/Containerfile`, and runs the tests inside them.
 
 ## Usage
 

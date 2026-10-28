@@ -1,0 +1,35 @@
+FROM almalinux:9
+
+RUN dnf -y install \
+        httpd \
+        ca-certificates \
+        procps-ng \
+    && dnf clean all
+
+RUN mkdir -p /var/cache/e2e \
+    && for pkg in httpd httpd-core httpd-tools mod_lua; do \
+        curl -fsSL -o "/var/cache/e2e/$pkg-old.rpm" \
+            "https://repo.almalinux.org/vault/9.4/AppStream/x86_64/os/Packages/$pkg-2.4.57-11.el9_4.1.x86_64.rpm" || exit 1; \
+    done \
+    && curl -fsSL -o /var/cache/e2e/httpd-filesystem-old.rpm \
+        'https://repo.almalinux.org/vault/9.4/AppStream/x86_64/os/Packages/httpd-filesystem-2.4.57-11.el9_4.1.noarch.rpm' \
+    && dnf -y remove mod_http2 \
+    && rpm -U --oldpackage --replacepkgs /var/cache/e2e/*.rpm \
+    && dnf makecache
+
+RUN printf 'e2e-almalinux\n' > /etc/machine-id \
+    && ln -snf /usr/share/zoneinfo/UTC /etc/localtime
+
+COPY e2e-tests/almalinux/entrypoint.sh /usr/local/bin/e2e-entrypoint
+COPY e2e-tests/almalinux/reset.sh /usr/local/bin/e2e-reset
+RUN chmod +x /usr/local/bin/e2e-entrypoint /usr/local/bin/e2e-reset
+
+ENV E2E_PACKAGE=httpd-core
+ENV E2E_SERVICE=httpd
+ENV E2E_OLD_VERSION=2.4.57-11.el9_4.1
+ENV E2E_PACKAGE_MANAGER=rpm
+ENV E2E_UPDATE_MANAGER=dnf
+ENV E2E_RESET=/usr/local/bin/e2e-reset
+
+ENTRYPOINT ["/usr/local/bin/e2e-entrypoint"]
+CMD ["/tests/e2e", "-test.v"]

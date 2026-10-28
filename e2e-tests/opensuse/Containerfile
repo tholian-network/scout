@@ -1,0 +1,37 @@
+FROM opensuse/leap:15.6
+
+RUN zypper --non-interactive refresh \
+    && zypper --non-interactive install \
+        apache2 \
+        ca-certificates \
+        curl \
+        coreutils \
+        procps \
+        which
+
+RUN mkdir -p /var/cache/e2e \
+    && curl -fsSL -o /var/cache/e2e/apache2-old.rpm \
+        'https://download.opensuse.org/distribution/leap/15.6/repo/oss/x86_64/apache2-2.4.58-150600.3.1.x86_64.rpm' \
+    && curl -fsSL -o /var/cache/e2e/apache2-prefork-old.rpm \
+        'https://download.opensuse.org/distribution/leap/15.6/repo/oss/x86_64/apache2-prefork-2.4.58-150600.3.1.x86_64.rpm' \
+    && curl -fsSL -o /var/cache/e2e/apache2-utils-old.rpm \
+        'https://download.opensuse.org/distribution/leap/15.6/repo/oss/x86_64/apache2-utils-2.4.58-150600.3.1.x86_64.rpm' \
+    && rpm -U --oldpackage --replacepkgs /var/cache/e2e/*.rpm \
+    && zypper --non-interactive refresh
+
+RUN printf 'e2e-opensuse\n' > /etc/machine-id \
+    && ln -snf /usr/share/zoneinfo/UTC /etc/localtime
+
+COPY e2e-tests/opensuse/entrypoint.sh /usr/local/bin/e2e-entrypoint
+COPY e2e-tests/opensuse/reset.sh /usr/local/bin/e2e-reset
+RUN chmod +x /usr/local/bin/e2e-entrypoint /usr/local/bin/e2e-reset
+
+ENV E2E_PACKAGE=apache2-prefork
+ENV E2E_SERVICE=httpd-prefork
+ENV E2E_OLD_VERSION=2.4.58-150600.3.1
+ENV E2E_PACKAGE_MANAGER=rpm
+ENV E2E_UPDATE_MANAGER=zypper
+ENV E2E_RESET=/usr/local/bin/e2e-reset
+
+ENTRYPOINT ["/usr/local/bin/e2e-entrypoint"]
+CMD ["/tests/e2e", "-test.v"]
