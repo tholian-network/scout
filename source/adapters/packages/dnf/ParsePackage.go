@@ -3,7 +3,9 @@ package dnf
 import "tholian-scout/adapters/packages/rpm"
 import "tholian-core/matchers"
 import "tholian-core/structs"
+import "strconv"
 import "strings"
+import "time"
 
 func ParsePackage(buffer string, result *structs.Package) {
 
@@ -38,7 +40,12 @@ func ParsePackage(buffer string, result *structs.Package) {
 
 		} else if key == "Buildtime" {
 
-			result.SetDatetime(val)
+			// Build Time as unix timestamp
+			number, err := strconv.ParseInt(val, 10, 64)
+
+			if err == nil {
+				result.SetDatetime(time.Unix(number, 0).Format(time.RFC3339))
+			}
 
 		} else if key == "Conflicts" {
 
@@ -121,6 +128,10 @@ func ParsePackage(buffer string, result *structs.Package) {
 
 		}
 
+	}
+
+	if result.Datetime.IsValid() == false {
+		result.SetDatetime(time.Now().Format(time.RFC3339))
 	}
 
 }

@@ -1,9 +1,11 @@
 package zypper
 
 import "tholian-core/structs"
+import "tholian-scout/adapters/packages/rpm"
 import "os"
 import "os/exec"
 import "strings"
+import "time"
 
 func CollectPackages() []structs.Package {
 
@@ -14,58 +16,89 @@ func CollectPackages() []structs.Package {
 		os.Setenv("TZ", "Europe/Greenwich")
 		os.Setenv("LC_TIME", "en_US")
 
-		cmd := exec.Command("zypper", "search", "--installed-only")
+		rpm_packages := rpm.CollectPackages()
+		rpm_index := make(map[string]structs.Package)
+
+		for r := 0; r < len(rpm_packages); r++ {
+			key := rpm_packages[r].Name + "." + rpm_packages[r].Architecture.String()
+			rpm_index[key] = rpm_packages[r]
+		}
+
+		cmd := exec.Command("zypper", "packages", "--installed-only")
 		buffer, err := cmd.Output()
 
 		if err == nil {
 
 			lines := strings.Split(strings.TrimSpace(string(buffer)), "\n")
+			start := -1
 
-			if len(lines) > 4 {
+			for l := 0; l < len(lines)-1; l++ {
 
-				check1 := strings.TrimSpace(lines[0])
-				check2 := strings.TrimSpace(lines[1])
-				// Empty Line in between
-				check3 := strings.TrimSpace(lines[3])
-				check4 := strings.TrimSpace(lines[4])
+				check1 := strings.TrimSpace(lines[l])
+				check2 := strings.TrimSpace(lines[l+1])
 
-				if strings.Contains(check1, "Loading repository data...") &&
-					strings.Contains(check2, "Reading installed packages...") &&
-					strings.Contains(check3, "|") &&
-					strings.HasPrefix(check4, "---") && strings.HasSuffix(check4, "---") {
+				if strings.Contains(check1, "|") &&
+					strings.HasPrefix(check2, "---") && strings.HasSuffix(check2, "---") {
+					start = l + 2
+					break
+				}
 
-					for l := 5; l < len(lines); l++ {
+			}
 
-						line := strings.TrimSpace(lines[l])
+			if start != -1 {
 
-						if line != "" {
+				index := make(map[string]bool)
 
-							if strings.Contains(line, "---") {
+				for l := start; l < len(lines); l++ {
 
-								// Do Nothing
+					line := strings.TrimSpace(lines[l])
 
-							} else if strings.Contains(line, "|") {
+					if line != "" {
 
-								chunks := strings.Split(line, "|")
+						if strings.Contains(line, "---") {
 
-								if len(chunks) == 4 {
+							// Do Nothing
 
-									status := strings.TrimSpace(chunks[0])
-									name := strings.TrimSpace(chunks[1])
-									typ := strings.TrimSpace(chunks[3])
+						} else if strings.Contains(line, "|") {
 
-									if typ == "package" {
+							chunks := strings.Split(line, "|")
 
-										if status == "i" || status == "i+" {
+							if len(chunks) == 5 {
 
-											pkg := CollectPackage(name)
+								status := strings.TrimSpace(chunks[0])
+								name := strings.TrimSpace(chunks[2])
+								version := strings.TrimSpace(chunks[3])
+								architecture := strings.TrimSpace(chunks[4])
+								key := name + "." + architecture
 
-											if pkg.Name != "" && pkg.Version.IsValid() {
-												collected = append(collected, pkg)
-											}
+								if (status == "i" || status == "i+") && index[key] == false {
 
-										}
+									index[key] = true
 
+									pkg := structs.NewPackage("zypper")
+									pkg.SetName(name)
+									pkg.SetVersion(version)
+									pkg.SetArchitecture(architecture)
+
+									if other, ok := rpm_index[key]; ok {
+										pkg.URL = other.URL
+										pkg.Vendor = other.Vendor
+										pkg.Datetime = other.Datetime
+										pkg.Maintainers = other.Maintainers
+										pkg.Filesystem = other.Filesystem
+										pkg.Conflicts = other.Conflicts
+										pkg.Dependencies = other.Dependencies
+										pkg.Provides = other.Provides
+										pkg.Replaces = other.Replaces
+										pkg.Unresolved = other.Unresolved
+									}
+
+									if pkg.Datetime.IsValid() == false {
+										pkg.SetDatetime(time.Now().Format(time.RFC3339))
+									}
+
+									if pkg.Name != "" && pkg.Version.IsValid() {
+										collected = append(collected, pkg)
 									}
 
 								}
