@@ -20,53 +20,49 @@ func CollectUpdates() []structs.Update {
 		if err == nil {
 
 			lines := strings.Split(strings.TrimSpace(string(buffer)), "\n")
+			start := -1
 
-			if len(lines) > 4 {
+			for l := 0; l < len(lines)-1; l++ {
+				if strings.Contains(lines[l], "|") && strings.Contains(lines[l+1], "---") {
+					start = l + 2
+					break
+				}
+			}
 
-				check1 := strings.TrimSpace(lines[0])
-				check2 := strings.TrimSpace(lines[1])
-				check3 := strings.TrimSpace(lines[2])
-				check4 := strings.TrimSpace(lines[3])
+			if start != -1 {
 
-				if strings.Contains(check1, "Loading repository data...") &&
-					strings.Contains(check2, "Reading installed packages...") &&
-					strings.Contains(check3, "|") &&
-					strings.HasPrefix(check4, "--") && strings.HasSuffix(check4, "---") {
+				for l := start; l < len(lines); l++ {
 
-					for l := 4; l < len(lines); l++ {
+					line := strings.TrimSpace(lines[l])
 
-						line := strings.TrimSpace(lines[l])
+					if line != "" {
 
-						if line != "" {
+						if strings.Contains(line, "---") {
 
-							if strings.Contains(line, "---") {
+							// Do Nothing
 
-								// Do Nothing
+						} else if strings.Contains(line, "|") {
 
-							} else if strings.Contains(line, "|") {
+							chunks := strings.Split(line, "|")
 
-								chunks := strings.Split(line, "|")
+							if len(chunks) == 6 {
 
-								if len(chunks) == 6 {
+								status := strings.TrimSpace(chunks[0])
+								// repo := strings.TrimSpace(chunks[1])
+								name := strings.TrimSpace(chunks[2])
+								// current_version := strings.TrimSpace(chunks[3])
+								version := strings.TrimSpace(chunks[4])
+								architecture := strings.TrimSpace(chunks[5])
 
-									status := strings.TrimSpace(chunks[0])
-									// repo := strings.TrimSpace(chunks[1])
-									name := strings.TrimSpace(chunks[2])
-									// current_version := strings.TrimSpace(chunks[3])
-									version := strings.TrimSpace(chunks[4])
-									architecture := strings.TrimSpace(chunks[5])
+								if status == "v" {
 
-									if status == "v" {
+									update := structs.NewUpdate("zypper")
+									update.SetName(name)
+									update.SetVersion(version)
+									update.SetArchitecture(architecture)
 
-										update := structs.NewUpdate("zypper")
-										update.SetName(name)
-										update.SetVersion(version)
-										update.SetArchitecture(architecture)
-
-										if update.Name != "" && update.Version.IsValid() {
-											collected = append(collected, update)
-										}
-
+									if update.Name != "" && update.Version.IsValid() {
+										collected = append(collected, update)
 									}
 
 								}

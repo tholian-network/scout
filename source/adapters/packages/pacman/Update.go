@@ -77,6 +77,10 @@ func Update(updates []structs.Update) ([]structs.Update, error) {
 
 				}
 
+				if len(updated) == 0 {
+					updated = updates
+				}
+
 			} else {
 
 				stderr_message := strings.TrimSpace(string(stderr2.Bytes()))

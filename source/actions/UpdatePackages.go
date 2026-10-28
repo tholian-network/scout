@@ -40,56 +40,24 @@ func UpdatePackages(console *structs.Console, system *structs.System, searches [
 
 	if len(updates) > 0 {
 
+		var updated []structs.Update
+		var err error = nil
+
 		if pacman.SUPPORTED == true {
 
-			updated, err := pacman.Update(updates)
-
-			if err == nil {
-
-				remaining := make([]structs.Update, 0)
-
-				for u1 := 0; u1 < len(updates); u1++ {
-
-					update := updates[u1]
-					found := false
-
-					for u2 := 0; u2 < len(updated); u2++ {
-
-						if updated[u2].Name == update.Name {
-							found = true
-							break
-						}
-
-					}
-
-					if found == false {
-						remaining = append(remaining, update)
-					}
-
-				}
-
-				system.SetUpdates(remaining)
-				console.Log("Updated " + strconv.Itoa(len(updates)) + "/" + strconv.Itoa(len(system.Updates)) + " Packages")
-				result = true
-
-			} else {
-
-				console.Error("pacman.Update(): Failed")
-				console.Error(err.Error())
-
-			}
+			updated, err = pacman.Update(updates)
 
 		} else if apt.SUPPORTED == true {
 
-			// TODO: apt.Update()
+			updated, err = apt.Update(updates)
 
 		} else if apk.SUPPORTED == true {
 
-			// TODO: apk.Update()
+			updated, err = apk.Update(updates)
 
 		} else if dnf.SUPPORTED == true {
 
-			// TODO: dnf.Update()
+			updated, err = dnf.Update(updates)
 
 		} else if tdnf.SUPPORTED == true {
 
@@ -97,13 +65,48 @@ func UpdatePackages(console *structs.Console, system *structs.System, searches [
 
 		} else if zypper.SUPPORTED == true {
 
-			// TODO: zypper.Update()
+			updated, err = zypper.Update(updates)
 
 		} else {
 
 			// freebsd
 
 			// TODO: pkg.Update()
+
+		}
+
+		if err == nil && len(updated) > 0 {
+
+			remaining := make([]structs.Update, 0)
+
+			for u1 := 0; u1 < len(updates); u1++ {
+
+				update := updates[u1]
+				found := false
+
+				for u2 := 0; u2 < len(updated); u2++ {
+
+					if updated[u2].Name == update.Name {
+						found = true
+						break
+					}
+
+				}
+
+				if found == false {
+					remaining = append(remaining, update)
+				}
+
+			}
+
+			system.SetUpdates(remaining)
+			console.Log("Updated " + strconv.Itoa(len(updated)) + "/" + strconv.Itoa(len(updates)) + " Packages")
+			result = true
+
+		} else if err != nil {
+
+			console.Error("Update(): Failed")
+			console.Error(err.Error())
 
 		}
 

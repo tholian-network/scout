@@ -4,6 +4,7 @@ import "tholian-core/matchers"
 import "tholian-core/structs"
 import "tholian-scout/adapters/packages/rpm"
 import "strings"
+import "time"
 
 func ParsePackage(buffer string, result *structs.Package) {
 
@@ -144,6 +145,10 @@ func ParsePackage(buffer string, result *structs.Package) {
 
 		}
 
+	}
+
+	if result.Datetime.IsValid() == false {
+		result.SetDatetime(time.Now().Format(time.RFC3339))
 	}
 
 }

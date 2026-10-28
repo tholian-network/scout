@@ -9,6 +9,10 @@ func CollectAntiques(console *structs.Console, system *structs.System) bool {
 
 	collected := make([]structs.Antique, 0)
 
+	for s := 0; s < len(system.Services); s++ {
+		system.Services[s].ResolveDependencies(system.Packages)
+	}
+
 	for u := 0; u < len(system.Updates); u++ {
 
 		update := system.Updates[u]
@@ -21,7 +25,7 @@ func CollectAntiques(console *structs.Console, system *structs.System) bool {
 
 				pkg := service.Packages[p]
 
-				if pkg.Name == update.Name && pkg.Manager == update.Manager {
+				if pkg.Name == update.Name && isSamePackageManagerFamily(pkg.Manager.String(), update.Manager.String()) {
 
 					antique := structs.NewAntique(update.Manager.String(), service.Name)
 					antique.SetName(update.Name)
@@ -41,7 +45,7 @@ func CollectAntiques(console *structs.Console, system *structs.System) bool {
 
 				dependency := service.Dependencies[d]
 
-				if dependency.Name == update.Name && dependency.Manager == update.Manager.String() {
+				if dependency.Name == update.Name && isSamePackageManagerFamily(dependency.Manager, update.Manager.String()) {
 
 					antique := structs.NewAntique(update.Manager.String(), service.Name)
 					antique.SetName(update.Name)

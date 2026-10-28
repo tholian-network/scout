@@ -38,11 +38,11 @@ check-go-tools:
 .PHONY: check-insights
 check-insights:
 	@test -d "$(INSIGHTS_DIR)" && test -f "$(INSIGHTS_DIR)/go.mod" || { \
-		echo "Missing embedded Internet module:"; \
+		echo "Missing Tholian Insights module:"; \
 		echo ""; \
 		echo "    $(INSIGHTS_DIR)/go.mod"; \
 		echo ""; \
-		echo "This directory is required for guard builds and is not tracked by Git."; \
+		echo "This directory is required for Tholian Scout builds and is not tracked by Git."; \
 		echo "See README.md."; \
 		echo ""; \
 		exit 1; \

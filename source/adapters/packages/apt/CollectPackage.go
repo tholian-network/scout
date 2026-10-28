@@ -78,6 +78,29 @@ func CollectPackage(name string, version string) structs.Package {
 
 		}
 
+		if result.Name != "" {
+
+			cmd2 := exec.Command("dpkg-query", "-L", result.Name)
+			buffer2, err2 := cmd2.Output()
+
+			if err2 == nil {
+
+				lines := strings.Split(strings.TrimSpace(string(buffer2)), "\n")
+
+				for l := 0; l < len(lines); l++ {
+
+					file := strings.TrimSpace(lines[l])
+
+					if strings.HasPrefix(file, "/") {
+						result.AddFilesystem(file)
+					}
+
+				}
+
+			}
+
+		}
+
 		if strings.HasPrefix(result.Name, "lib32-") {
 			result.Architecture = "x86"
 		}
