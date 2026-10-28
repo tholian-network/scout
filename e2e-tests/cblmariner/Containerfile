@@ -1,0 +1,31 @@
+FROM mcr.microsoft.com/cbl-mariner/base/core:2.0
+
+RUN tdnf -y install \
+        httpd \
+        ca-certificates \
+        curl \
+        coreutils \
+        procps-ng \
+    && tdnf clean all
+
+RUN mkdir -p /var/cache/e2e \
+    && curl -fsSL -o /var/cache/e2e/httpd-old.rpm \
+        'https://packages.microsoft.com/cbl-mariner/2.0/prod/base/x86_64/Packages/h/httpd-2.4.62-1.cm2.x86_64.rpm' \
+    && rpm -U --oldpackage --replacepkgs /var/cache/e2e/*.rpm \
+    && tdnf makecache
+
+RUN printf 'e2e-cblmariner\n' > /etc/machine-id \
+    && ln -snf /usr/share/zoneinfo/UTC /etc/localtime
+
+COPY e2e-tests/cblmariner/entrypoint.sh /usr/local/bin/e2e-entrypoint
+COPY e2e-tests/cblmariner/reset.sh /usr/local/bin/e2e-reset
+RUN chmod +x /usr/local/bin/e2e-entrypoint /usr/local/bin/e2e-reset
+
+ENV E2E_PACKAGE=httpd
+ENV E2E_SERVICE=httpd
+ENV E2E_OLD_VERSION=2.4.62-1.cm2
+ENV E2E_PACKAGE_MANAGER=tdnf
+ENV E2E_RESET=/usr/local/bin/e2e-reset
+
+ENTRYPOINT ["/usr/local/bin/e2e-entrypoint"]
+CMD ["/tests/e2e", "-test.v"]
