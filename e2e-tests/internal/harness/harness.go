@@ -11,7 +11,6 @@ type Config struct {
 	Service        string
 	OldVersion     string
 	PackageManager string
-	UpdateManager  string
 	Reset          string
 }
 
@@ -24,7 +23,6 @@ func FromEnv(t *testing.T) Config {
 		Service:        env(t, "E2E_SERVICE"),
 		OldVersion:     env(t, "E2E_OLD_VERSION"),
 		PackageManager: env(t, "E2E_PACKAGE_MANAGER"),
-		UpdateManager:  env(t, "E2E_UPDATE_MANAGER"),
 		Reset:          env(t, "E2E_RESET"),
 	}
 

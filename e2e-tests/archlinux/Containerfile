@@ -25,7 +25,6 @@ ENV E2E_PACKAGE=apache
 ENV E2E_SERVICE=httpd
 ENV E2E_OLD_VERSION=2.4.62-1
 ENV E2E_PACKAGE_MANAGER=pacman
-ENV E2E_UPDATE_MANAGER=pacman
 ENV E2E_RESET=/usr/local/bin/e2e-reset
 
 ENTRYPOINT ["/usr/local/bin/e2e-entrypoint"]

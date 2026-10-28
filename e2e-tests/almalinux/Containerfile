@@ -27,8 +27,7 @@ RUN chmod +x /usr/local/bin/e2e-entrypoint /usr/local/bin/e2e-reset
 ENV E2E_PACKAGE=httpd-core
 ENV E2E_SERVICE=httpd
 ENV E2E_OLD_VERSION=2.4.57-11.el9_4.1
-ENV E2E_PACKAGE_MANAGER=rpm
-ENV E2E_UPDATE_MANAGER=dnf
+ENV E2E_PACKAGE_MANAGER=dnf
 ENV E2E_RESET=/usr/local/bin/e2e-reset
 
 ENTRYPOINT ["/usr/local/bin/e2e-entrypoint"]

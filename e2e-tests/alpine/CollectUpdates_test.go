@@ -24,8 +24,8 @@ func TestCollectUpdates(t *testing.T) {
 		t.Fatalf("Expected %s update to be newer than %s, got %s", config.Package, config.OldVersion, update.Version.String())
 	}
 
-	if update.Manager.String() != config.UpdateManager {
-		t.Fatalf("Expected %s update manager %s, got %s", config.Package, config.UpdateManager, update.Manager.String())
+	if update.Manager.String() != config.PackageManager {
+		t.Fatalf("Expected %s update manager %s, got %s", config.Package, config.PackageManager, update.Manager.String())
 	}
 
 }

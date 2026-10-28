@@ -24,7 +24,6 @@ ENV E2E_PACKAGE=apache2
 ENV E2E_SERVICE=httpd
 ENV E2E_OLD_VERSION=2.4.67-r0
 ENV E2E_PACKAGE_MANAGER=apk
-ENV E2E_UPDATE_MANAGER=apk
 ENV E2E_RESET=/usr/local/bin/e2e-reset
 
 ENTRYPOINT ["/usr/local/bin/e2e-entrypoint"]
