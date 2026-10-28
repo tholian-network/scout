@@ -140,7 +140,28 @@ func CollectUpdates(console *structs.Console, system *structs.System) bool {
 		// cblmariner
 		// photonos
 
-		// TODO: tdnf.CollectUpdates()
+		tmp := tdnf.CollectUpdates()
+
+		if len(tmp) > 0 {
+
+			console.Info("tdnf.CollectUpdate(): Found " + strconv.Itoa(len(tmp)) + " Updates")
+
+			for _, update := range tmp {
+
+				if update.IsValid() {
+					collected = append(collected, update)
+				}
+
+			}
+
+		} else {
+
+			console.Warn("tdnf.CollectUpdates(): Found 0 Updates")
+
+		}
+
+		system.SetUpdates(collected)
+		result = true
 
 	} else if zypper.SUPPORTED == true {
 

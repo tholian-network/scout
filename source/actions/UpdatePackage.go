@@ -51,7 +51,7 @@ func UpdatePackage(console *structs.Console, system *structs.System, search matc
 
 		} else if tdnf.SUPPORTED == true {
 
-			// TODO: tdnf.Update()
+			updated, err = tdnf.Update(updates)
 
 		} else if zypper.SUPPORTED == true {
 

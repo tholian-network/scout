@@ -93,34 +93,6 @@ func CollectPackages(console *structs.Console, system *structs.System) bool {
 		system.SetPackages(collected)
 		result = true
 
-	} else if rpm.SUPPORTED == true {
-
-		// RPM is much faster than dnf, tdnf and zypper
-		// but can only CollectPackages()
-
-		tmp := rpm.CollectPackages()
-
-		if len(tmp) > 0 {
-
-			console.Info("rpm.CollectPackages(): Found " + strconv.Itoa(len(tmp)) + " Packages")
-
-			for _, pkg := range tmp {
-
-				if pkg.IsValid() {
-					collected = append(collected, pkg)
-				}
-
-			}
-
-		} else {
-
-			console.Warn("rpm.CollectPackages(): Found 0 Packages")
-
-		}
-
-		system.SetPackages(collected)
-		result = true
-
 	} else if dnf.SUPPORTED == true {
 
 		tmp := dnf.CollectPackages()
@@ -148,7 +120,28 @@ func CollectPackages(console *structs.Console, system *structs.System) bool {
 
 	} else if tdnf.SUPPORTED == true {
 
-		// TODO: tdnf.CollectPackages()
+		tmp := tdnf.CollectPackages()
+
+		if len(tmp) > 0 {
+
+			console.Info("tdnf.CollectPackages(): Found " + strconv.Itoa(len(tmp)) + " Packages")
+
+			for _, pkg := range tmp {
+
+				if pkg.IsValid() {
+					collected = append(collected, pkg)
+				}
+
+			}
+
+		} else {
+
+			console.Warn("tdnf.CollectPackages(): Found 0 Packages")
+
+		}
+
+		system.SetPackages(collected)
+		result = true
 
 	} else if zypper.SUPPORTED == true {
 
@@ -169,6 +162,34 @@ func CollectPackages(console *structs.Console, system *structs.System) bool {
 		} else {
 
 			console.Warn("zypper.CollectPackages(): Found 0 Packages")
+
+		}
+
+		system.SetPackages(collected)
+		result = true
+
+	} else if rpm.SUPPORTED == true {
+
+		// RPM can only CollectPackages() and is used as a fallback
+		// when no downstream package manager is available
+
+		tmp := rpm.CollectPackages()
+
+		if len(tmp) > 0 {
+
+			console.Info("rpm.CollectPackages(): Found " + strconv.Itoa(len(tmp)) + " Packages")
+
+			for _, pkg := range tmp {
+
+				if pkg.IsValid() {
+					collected = append(collected, pkg)
+				}
+
+			}
+
+		} else {
+
+			console.Warn("rpm.CollectPackages(): Found 0 Packages")
 
 		}
 
