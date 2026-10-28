@@ -1,0 +1,31 @@
+FROM debian:bookworm-slim
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN printf '#!/bin/sh\nexit 101\n' > /usr/sbin/policy-rc.d && chmod +x /usr/sbin/policy-rc.d
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    apache2-bin \
+    ca-certificates \
+    coreutils \
+    curl \
+    procps \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN mkdir -p /var/cache/e2e && cd /var/cache/e2e \
+    && curl -fsSLO 'https://snapshot.debian.org/archive/debian/20240817T023924Z/pool/main/a/apache2/apache2-bin_2.4.62-1~deb12u1_amd64.deb' \
+    && curl -fsSLO 'https://snapshot.debian.org/archive/debian/20240817T023924Z/pool/main/a/apache2/apache2-data_2.4.62-1~deb12u1_all.deb' \
+    && dpkg -i /var/cache/e2e/*.deb
+
+RUN rm -f /usr/bin/apt /usr/bin/apt-cache
+
+RUN printf 'e2e-dpkg\n' > /etc/machine-id \
+    && ln -snf /usr/share/zoneinfo/UTC /etc/localtime
+
+ENV E2E_PACKAGE=apache2-bin
+ENV E2E_SERVICE=apache2
+ENV E2E_OLD_VERSION=2.4.62-1~deb12u1
+ENV E2E_PACKAGE_MANAGER=dpkg
+ENV E2E_RESET=/bin/true
+
+CMD ["/tests/e2e", "-test.v"]

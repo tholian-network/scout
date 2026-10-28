@@ -4,6 +4,7 @@ import "tholian-core/structs"
 import "tholian-scout/adapters/packages/apk"
 import "tholian-scout/adapters/packages/apt"
 import "tholian-scout/adapters/packages/dnf"
+import "tholian-scout/adapters/packages/dpkg"
 import "tholian-scout/adapters/packages/pacman"
 import "tholian-scout/adapters/packages/rpm"
 import "tholian-scout/adapters/packages/tdnf"
@@ -162,6 +163,34 @@ func CollectPackages(console *structs.Console, system *structs.System) bool {
 		} else {
 
 			console.Warn("zypper.CollectPackages(): Found 0 Packages")
+
+		}
+
+		system.SetPackages(collected)
+		result = true
+
+	} else if dpkg.SUPPORTED == true {
+
+		// dpkg is used as a fallback when no downstream
+		// Debian family package manager is available
+
+		tmp := dpkg.CollectPackages()
+
+		if len(tmp) > 0 {
+
+			console.Info("dpkg.CollectPackages(): Found " + strconv.Itoa(len(tmp)) + " Packages")
+
+			for _, pkg := range tmp {
+
+				if pkg.IsValid() {
+					collected = append(collected, pkg)
+				}
+
+			}
+
+		} else {
+
+			console.Warn("dpkg.CollectPackages(): Found 0 Packages")
 
 		}
 

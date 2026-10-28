@@ -14,6 +14,7 @@ host inventory APIs.
 | `archlinux` | `archlinux:latest` | `pacman` | `apache` | `2.4.62-1` | `httpd` | `apache` via `httpd` | `> 2.4.62-1` | `pacman -U` old package |
 | `cblmariner` | `mcr.microsoft.com/cbl-mariner/base/core:2.0` | `tdnf` | `httpd` | `2.4.62-1.cm2` | `httpd` | `httpd` via `httpd` | `> 2.4.62-1.cm2` | `rpm -U --oldpackage` |
 | `debian` | `debian:bookworm-slim` | `apt` | `apache2-bin` | `2.4.62-1~deb12u1` | `apache2` | `apache2-bin` via `apache2` | `> 2.4.62-1~deb12u1` | `dpkg -i` old packages |
+| `dpkg` | `debian:bookworm-slim` | `dpkg` | `apache2-bin` | `2.4.62-1~deb12u1` | not used | not tested | not tested | none |
 | `fedora` | `fedora:43` | `dnf` | `httpd-core` | `2.4.63-4.fc43` | `httpd` | `httpd-core` via `httpd` | `> 2.4.63-4.fc43` | `rpm -U --oldpackage` |
 | `opensuse` | `opensuse/leap:15.6` | `zypper` | `apache2-prefork` | `2.4.58-150600.3.1` | `httpd-prefork` | `apache2-prefork` via `httpd-prefork` | `> 2.4.58-150600.3.1` | `rpm -U --oldpackage` |
 | `rockylinux` | `rockylinux:9` | `dnf` | `httpd-core` | `2.4.57-11.el9_4.1` | `httpd` | `httpd-core` via `httpd` | `> 2.4.57-11.el9_4.1` | `rpm -U --oldpackage` |
@@ -23,8 +24,8 @@ host inventory APIs.
 distribution repository currently provides. The exact new version is not
 pinned because repositories move over time.
 
-The `rpm` target is a package-collection-only test case. It runs only
-`CollectPackages` and `SearchPackages`, because the rpm adapter does not
+The `rpm` and `dpkg` targets are package-collection-only test cases. They run
+only `CollectPackages` and `SearchPackages`, because their adapters do not
 implement updates.
 
 ## Pinned Package Sources
@@ -36,6 +37,7 @@ implement updates.
 | `archlinux` | `apache` | Arch Linux package archive |
 | `cblmariner` | `httpd` | CBL-Mariner 2.0 base repository |
 | `debian` | `apache2`, `apache2-bin`, `apache2-data`, `apache2-utils` | Debian snapshot `20240817T023924Z` |
+| `dpkg` | `apache2-bin`, `apache2-data` | Debian snapshot `20240817T023924Z` |
 | `fedora` | `httpd`, `httpd-core`, `httpd-tools`, `mod_lua`, `httpd-filesystem` | Fedora Koji `httpd-2.4.63-4.fc43` |
 | `opensuse` | `apache2`, `apache2-prefork`, `apache2-utils` | openSUSE Leap 15.6 OSS repository |
 | `rockylinux` | `httpd`, `httpd-core`, `httpd-tools`, `mod_lua`, `httpd-filesystem` | Rocky Linux 9.4 vault AppStream |
@@ -63,6 +65,12 @@ The `rpm` target verifies only:
 - `CollectPackages` reports `httpd-core` at the pinned old version using the
   `rpm` package manager.
 - `SearchPackages` finds `httpd-core`.
+
+The `dpkg` target verifies only:
+
+- `CollectPackages` reports `apache2-bin` at the pinned old version using the
+  `dpkg` package manager, with `/usr/bin/apt` and `/usr/bin/apt-cache` removed.
+- `SearchPackages` finds `apache2-bin`.
 
 ## Running Tests
 
