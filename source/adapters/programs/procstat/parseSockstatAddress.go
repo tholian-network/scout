@@ -43,6 +43,6 @@ func parseSockstatAddress(value string) (string, uint16) {
 
 	}
 
-	return host, 0
+	return "", 0
 
 }

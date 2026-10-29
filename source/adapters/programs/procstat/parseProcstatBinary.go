@@ -12,7 +12,7 @@ func parseProcstatBinary(buffer string) map[uint]string {
 
 		fields := strings.Fields(lines[l])
 
-		if len(fields) >= 4 && fields[0] == "PID" {
+		if fields[0] != "PID" && len(fields) >= 4 {
 
 			pid, err := strconv.ParseUint(fields[0], 10, 64)
 

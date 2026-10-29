@@ -12,7 +12,7 @@ func parseProcstatValues(buffer string) map[uint]string {
 
 		fields := strings.Fields(lines[l])
 
-		if len(fields) >= 3 && fields[0] == "PID" {
+		if fields[0] != "PID" && len(fields) >= 3 {
 
 			pid, err := strconv.ParseUint(fields[0], 10, 64)
 
