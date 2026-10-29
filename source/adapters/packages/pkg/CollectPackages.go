@@ -1,6 +1,7 @@
 package pkg
 
 import "tholian-core/structs"
+import utils_path "tholian-core/utils/path"
 import "os"
 import "os/exec"
 
@@ -42,7 +43,15 @@ func CollectPackages() []structs.Package {
 				if err2 == nil && len(buffer_files) > 0 {
 
 					for _, file := range parsePackageFiles(string(buffer_files), collected[c].Name) {
-						addFilesystem(&collected[c], file)
+
+						if utils_path.IsWatchedFile(file) {
+
+							if collected[c].HasFilesystem(file) == false {
+								collected[c].Filesystem = append(collected[c].Filesystem, file)
+							}
+
+						}
+
 					}
 
 				}
