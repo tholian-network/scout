@@ -46,7 +46,8 @@ sudo env THOLIAN_REPORT="/tmp/tholian-report.json" ./tholian-scout-amd64 collect
 
 ## License
 
-Proprietary License. All Rights Reserved.
+The Tholian Scout is licensed under the
+[GNU Affero General Public License v3.0](LICENSE.txt).
 
 `(c) 2020-2026 by Tholian(r) Network`
 
