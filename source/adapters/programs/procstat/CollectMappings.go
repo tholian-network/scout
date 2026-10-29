@@ -1,5 +1,7 @@
 package procstat
 
+import "os"
+import "os/exec"
 import "strconv"
 import "strings"
 
@@ -15,7 +17,10 @@ func CollectMappings() map[uint][]Mapping {
 
 	if SUPPORTED == true {
 
-		buffer, err := run("procstat", "-a", "-h", "-v")
+		cmd := exec.Command("procstat", "-a", "-h", "-v")
+		cmd.Env = append(os.Environ(), "LC_ALL=C")
+
+		buffer, err := cmd.Output()
 
 		if err == nil && len(buffer) > 0 {
 
@@ -56,4 +61,3 @@ func CollectMappings() map[uint][]Mapping {
 	return collected
 
 }
-
