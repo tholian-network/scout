@@ -5,7 +5,7 @@ import "tholian-core/structs"
 
 func toAccessIncident(system string, datetime string, ip string, username string) structs.Incident {
 
-	var incident = structs.NewIncident(system, "Access")
+	var incident = structs.NewIncident(system, "Exfil")
 
 	incident.SetDatetime(datetime)
 

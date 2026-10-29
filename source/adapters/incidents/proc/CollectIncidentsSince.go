@@ -2,18 +2,72 @@ package proc
 
 import "tholian-core/structs"
 import "tholian-core/types"
+import utils_incidents "tholian-scout/internal/utils/incidents"
+import "tholian-scout/adapters/programs/proc"
+import "os"
+import "sort"
+import "time"
 
-func CollectIncidentsSince(system string, datetime types.Datetime) []structs.Incident {
+func CollectIncidentsSince(system string, since types.Datetime) []structs.Incident {
 
 	var result []structs.Incident
 
 	if SUPPORTED == true {
 
-		// since := datetime.String()
+		processes := proc.CollectProcesses()
+		seen := make(map[string]bool)
+		self := uint(os.Getpid())
 
-		// TODO: Analyze environment variables
+		for p := 0; p < len(processes); p++ {
+
+			program := processes[p]
+
+			if program.PID == self {
+				continue
+			}
+
+			datetime := time.Now().Format("2006-01-02 15:04:05")
+
+			if started, ok := ProcessStartedAt(program.PID); ok == true {
+				datetime = started.String()
+			}
+
+			current := types.ToDatetime(datetime)
+
+			if current.IsValid() && current.IsAfter(since) {
+
+				incidents := AnalyzeProgram(system, datetime, program)
+
+				for i := 0; i < len(incidents); i++ {
+
+					incident := incidents[i]
+
+					if incident.IsValid() == true {
+
+						identity := incident.Hash()
+
+						if identity == "" {
+							identity = utils_incidents.ToIdentity(incident)
+						}
+
+						if seen[identity] == false {
+							result = append(result, incident)
+							seen[identity] = true
+						}
+
+					}
+
+				}
+
+			}
+
+		}
 
 	}
+
+	sort.SliceStable(result, func(a int, b int) bool {
+		return result[a].Datetime.IsBefore(result[b].Datetime)
+	})
 
 	return result
 

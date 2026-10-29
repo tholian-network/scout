@@ -3,7 +3,9 @@ package actions
 import "tholian-core/matchers"
 import "tholian-core/structs"
 import "tholian-core/types"
+import utils_incidents "tholian-scout/internal/utils/incidents"
 import "tholian-scout/adapters/incidents/proc"
+import "tholian-scout/adapters/incidents/syslog"
 import "tholian-scout/adapters/incidents/systemd"
 import "strconv"
 
@@ -46,7 +48,7 @@ func CollectIncidentsSince(console *structs.Console, system *structs.System, sea
 	} else if search.From == "any" && search.Until != "any" {
 
 		now := types.NewDatetime()
-		tmp1 := types.ToDatetime(search.From)
+		tmp1 := types.ToDatetime(search.Until)
 
 		if tmp1.IsAfter(now) {
 
@@ -64,6 +66,12 @@ func CollectIncidentsSince(console *structs.Console, system *structs.System, sea
 
 	if from != nil {
 
+		seen := make(map[string]bool)
+
+		for i := 0; i < len(system.Incidents); i++ {
+			seen[utils_incidents.ToIdentity(system.Incidents[i])] = true
+		}
+
 		if proc.SUPPORTED == true {
 
 			tmp := proc.CollectIncidentsSince(system.Name, *from)
@@ -74,15 +82,15 @@ func CollectIncidentsSince(console *structs.Console, system *structs.System, sea
 
 				for _, incident := range tmp {
 
-					if until == nil {
+					if until == nil || incident.Datetime.IsBefore(*until) {
 
-						system.AddIncident(incident)
-						collected += 1
+						identity := utils_incidents.ToIdentity(incident)
 
-					} else if incident.Datetime.IsBefore(*until) {
-
-						system.AddIncident(incident)
-						collected += 1
+						if seen[identity] == false {
+							system.AddIncident(incident)
+							seen[identity] = true
+							collected += 1
+						}
 
 					}
 
@@ -112,15 +120,15 @@ func CollectIncidentsSince(console *structs.Console, system *structs.System, sea
 
 				for _, incident := range tmp {
 
-					if until == nil {
+					if until == nil || incident.Datetime.IsBefore(*until) {
 
-						system.AddIncident(incident)
-						collected += 1
+						identity := utils_incidents.ToIdentity(incident)
 
-					} else if incident.Datetime.IsBefore(*until) {
-
-						system.AddIncident(incident)
-						collected += 1
+						if seen[identity] == false {
+							system.AddIncident(incident)
+							seen[identity] = true
+							collected += 1
+						}
 
 					}
 
@@ -140,8 +148,43 @@ func CollectIncidentsSince(console *structs.Console, system *structs.System, sea
 
 		}
 
-		// TODO: else if rsyslogd.SUPPORTED == true {
-		// }
+		if syslog.SUPPORTED == true {
+
+			tmp := syslog.CollectIncidentsSince(system.Name, *from)
+
+			if len(tmp) > 0 {
+
+				console.Info("syslog.CollectIncidentsSince(): Found " + strconv.Itoa(len(tmp)) + " Incidents since " + from.String())
+
+				for _, incident := range tmp {
+
+					if until == nil || incident.Datetime.IsBefore(*until) {
+
+						identity := utils_incidents.ToIdentity(incident)
+
+						if seen[identity] == false {
+							system.AddIncident(incident)
+							seen[identity] = true
+							collected += 1
+						}
+
+					}
+
+				}
+
+			} else {
+
+				console.Warn("syslog.CollectIncidentsSince(): Found 0 Incidents since " + from.String())
+
+			}
+
+			result = true
+
+		} else {
+
+			console.Warn("syslog.CollectIncidentsSince(): Unsupported")
+
+		}
 
 	}
 

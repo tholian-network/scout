@@ -1,19 +1,20 @@
-package systemd
+package classifiers
 
 import "tholian-core/structs"
 
-// import "tholian-scout/adapters/incidents/systemd/auth"
-import "tholian-scout/adapters/incidents/systemd/dovecot"
-import "tholian-scout/adapters/incidents/systemd/gogs"
-import "tholian-scout/adapters/incidents/systemd/pam"
-import "tholian-scout/adapters/incidents/systemd/postfix"
-import "tholian-scout/adapters/incidents/systemd/sshd"
-import "tholian-scout/adapters/incidents/systemd/sudo"
+import "tholian-scout/internal/classifiers/dropbear"
+import "tholian-scout/internal/classifiers/dovecot"
+import "tholian-scout/internal/classifiers/gogs"
+import "tholian-scout/internal/classifiers/pam"
+import "tholian-scout/internal/classifiers/postfix"
+import "tholian-scout/internal/classifiers/sshd"
+import "tholian-scout/internal/classifiers/sudo"
 
 var Classifiers map[string]func(string, string, string, string, string) structs.Incident = map[string]func(string, string, string, string, string) structs.Incident{
 	// "auth":                auth.Classify,
 	// "auth-worker":         auth.Classify,
 	"dovecot":             dovecot.Classify,
+	"dropbear":            dropbear.Classify,
 	"gogs":                gogs.Classify,
 	"pam":                 pam.Classify,
 	"ssh":                 sshd.Classify,

@@ -2,6 +2,7 @@ package systemd
 
 import "tholian-core/structs"
 import "tholian-core/types"
+import "tholian-scout/internal/classifiers"
 import "strings"
 
 func ParseIncidents(buffer []byte, system string) []structs.Incident {
@@ -78,7 +79,7 @@ func ParseIncidents(buffer []byte, system string) []structs.Incident {
 
 			}
 
-			classify, ok1 := Classifiers[service]
+			classify, ok1 := classifiers.Classifiers[service]
 
 			if ok1 == true {
 

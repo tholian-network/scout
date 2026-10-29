@@ -2,7 +2,9 @@ package actions
 
 import "tholian-core/structs"
 import "tholian-scout/adapters/incidents/proc"
+import "tholian-scout/adapters/incidents/syslog"
 import "tholian-scout/adapters/incidents/systemd"
+import utils_incidents "tholian-scout/internal/utils/incidents"
 import "strconv"
 
 func CollectIncidents(console *structs.Console, system *structs.System) bool {
@@ -12,6 +14,7 @@ func CollectIncidents(console *structs.Console, system *structs.System) bool {
 	console.Group("actions/CollectIncidents")
 
 	collected := make([]structs.Incident, 0)
+	seen := make(map[string]bool)
 
 	if proc.SUPPORTED == true {
 
@@ -24,7 +27,14 @@ func CollectIncidents(console *structs.Console, system *structs.System) bool {
 			for _, incident := range tmp {
 
 				if incident.IsValid() {
-					collected = append(collected, incident)
+
+					identity := utils_incidents.ToIdentity(incident)
+
+					if seen[identity] == false {
+						collected = append(collected, incident)
+						seen[identity] = true
+					}
+
 				}
 
 			}
@@ -54,7 +64,14 @@ func CollectIncidents(console *structs.Console, system *structs.System) bool {
 			for _, incident := range tmp {
 
 				if incident.IsValid() {
-					collected = append(collected, incident)
+
+					identity := utils_incidents.ToIdentity(incident)
+
+					if seen[identity] == false {
+						collected = append(collected, incident)
+						seen[identity] = true
+					}
+
 				}
 
 			}
@@ -73,8 +90,42 @@ func CollectIncidents(console *structs.Console, system *structs.System) bool {
 
 	}
 
-	// TODO: else if rsyslogd.SUPPORTED == true {
-	// }
+	if syslog.SUPPORTED == true {
+
+		tmp := syslog.CollectIncidents(system.Name)
+
+		if len(tmp) > 0 {
+
+			console.Info("syslog.CollectIncidents(): Found " + strconv.Itoa(len(tmp)) + " Incidents")
+
+			for _, incident := range tmp {
+
+				if incident.IsValid() {
+
+					identity := utils_incidents.ToIdentity(incident)
+
+					if seen[identity] == false {
+						collected = append(collected, incident)
+						seen[identity] = true
+					}
+
+				}
+
+			}
+
+		} else {
+
+			console.Warn("syslog.CollectIncidents(): Found 0 Incidents")
+
+		}
+
+		result = true
+
+	} else {
+
+		console.Warn("syslog.CollectIncidents(): Unsupported")
+
+	}
 
 	system.SetIncidents(collected)
 

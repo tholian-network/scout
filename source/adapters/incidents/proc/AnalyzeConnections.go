@@ -2,6 +2,7 @@ package proc
 
 import "tholian-core/structs"
 import utils_incidents "tholian-scout/internal/utils/incidents"
+import utils_programs "tholian-scout/internal/utils/programs"
 import "strconv"
 
 func AnalyzeConnections(system string, datetime string, program structs.Program) []structs.Incident {
