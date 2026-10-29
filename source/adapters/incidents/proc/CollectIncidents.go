@@ -26,8 +26,9 @@ func CollectIncidents(system string) []structs.Incident {
 			}
 
 			datetime := time.Now().Format("2006-01-02 15:04:05")
+			started := getProcessStartedAt(program.PID)
 
-			if started, ok := ProcessStartedAt(program.PID); ok == true {
+			if started != nil && started.IsValid() == true {
 				datetime = started.String()
 			}
 
@@ -46,8 +47,8 @@ func CollectIncidents(system string) []structs.Incident {
 					}
 
 					if seen[identity] == false {
-						seen[identity] = true
 						result = append(result, incident)
+						seen[identity] = true
 					}
 
 				}

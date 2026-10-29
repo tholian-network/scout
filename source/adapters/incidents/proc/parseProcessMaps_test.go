@@ -1,29 +1,6 @@
 package proc
 
 import "testing"
-import "tholian-core/structs"
-import "time"
-
-func programWithEnvironment(key string, value string) structs.Program {
-
-	program := structs.NewProgram(1234, "test")
-	program.SetCommand("/usr/bin/test")
-	program.SetArguments([]string{"test"})
-	program.SetEnvironment(key, value)
-
-	return program
-
-}
-
-func programWithArguments(name string, command string, arguments ...string) structs.Program {
-
-	program := structs.NewProgram(1234, name)
-	program.SetCommand(command)
-	program.SetArguments(arguments)
-
-	return program
-
-}
 
 func TestParseProcessMaps(t *testing.T) {
 
@@ -53,21 +30,11 @@ func TestParseProcessMaps(t *testing.T) {
 func TestParseStartTicks(t *testing.T) {
 
 	buffer := []byte("123 (evil process) S 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 999")
-	ticks, ok := parseStartTicks(buffer)
+	ticks := getProcessTicks(buffer)
 
-	if ok == false || ticks != 999 {
-		t.Fatalf("Expected 999 ticks, got %d, %v", ticks, ok)
+	if ticks != 999 {
+		t.Fatalf("Expected 999 ticks, got %d", ticks)
 	}
 
 }
 
-func TestToStartDatetime(t *testing.T) {
-
-	datetime := toStartDatetime(1700000000, 12345)
-	expected := time.Unix(1700000123, 0).Format("2006-01-02 15:04:05")
-
-	if datetime.String() != expected {
-		t.Fatalf("Unexpected datetime: %s, want %s", datetime.String(), expected)
-	}
-
-}

@@ -1,6 +1,8 @@
 package proc
 
 import "tholian-core/structs"
+import utils_os "tholian-scout/internal/utils/os"
+import utils_strings "tholian-scout/internal/utils/strings"
 import "os"
 import "strconv"
 import "strings"
@@ -32,23 +34,23 @@ func AnalyzeMaps(system string, datetime string, program structs.Program) []stru
 		if strings.HasPrefix(value, "memfd:") {
 
 			if seen[value] == false {
+				result = append(result, toDestroyIncident(system, datetime, program, "mapped "+utils_strings.Truncate(value, 512)))
 				seen[value] = true
-				result = append(result, toDestroyIncident(system, datetime, program, "mapped "+truncate(value, 512)))
 				collected += 1
 			}
 
 		} else if strings.HasPrefix(value, "/") {
 
-			deleted := strings.Contains(value, " (deleted)")
-			untrusted := IsUntrustedPath(value)
-			executable := strings.Contains(entry.Permissions, "x")
-			shared := strings.Contains(value, ".so")
+			is_deleted := strings.Contains(value, " (deleted)")
+			is_trusted := utils_os.IsTrustedPath(value)
+			is_exe := strings.Contains(entry.Permissions, "x")
+			is_so := strings.Contains(value, ".so")
 
-			if (deleted == true || untrusted == true) && (executable == true || shared == true) {
+			if (is_deleted == true || is_trusted == false) && (is_exe == true || is_so == true) {
 
 				if seen[value] == false {
+					result = append(result, toDestroyIncident(system, datetime, program, "mapped "+utils_strings.Truncate(value, 512)))
 					seen[value] = true
-					result = append(result, toDestroyIncident(system, datetime, program, "mapped "+truncate(value, 512)))
 					collected += 1
 				}
 

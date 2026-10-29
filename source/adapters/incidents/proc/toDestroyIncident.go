@@ -2,6 +2,7 @@ package proc
 
 import "tholian-core/matchers"
 import "tholian-core/structs"
+import utils_strings "tholian-scout/internal/utils/strings"
 
 func toDestroyIncident(system string, datetime string, program structs.Program, evidence string) structs.Incident {
 
@@ -20,7 +21,7 @@ func toDestroyIncident(system string, datetime string, program structs.Program, 
 	}
 
 	if len(program.Arguments) > 0 {
-		matcher.SetArguments(capArguments(program.Arguments))
+		matcher.SetArguments(program.Arguments)
 	}
 
 	incident.AddProgram(matcher)
@@ -31,7 +32,7 @@ func toDestroyIncident(system string, datetime string, program structs.Program, 
 
 	if evidence != "" {
 
-		value := structs.NewEvidence(structs.EvidenceTypeText, []byte(truncate(evidence, 1024)))
+		value := structs.NewEvidence(structs.EvidenceTypeText, []byte(utils_strings.Truncate(evidence, 1024)))
 		value.SetDatetime(datetime)
 		incident.AddEvidence(value)
 

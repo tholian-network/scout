@@ -1,6 +1,7 @@
 package proc
 
 import "tholian-core/structs"
+import utils_os "tholian-scout/internal/utils/os"
 import "strings"
 
 func AnalyzeEnvironment(system string, datetime string, program structs.Program) []structs.Incident {
@@ -32,7 +33,7 @@ func AnalyzeEnvironment(system string, datetime string, program structs.Program)
 
 			entry := strings.TrimSpace(entries[e])
 
-			if entry != "" && IsUntrustedPath(entry) {
+			if entry != "" && utils_os.IsTrustedPath(entry) == false {
 				suspicious = append(suspicious, entry)
 			}
 
