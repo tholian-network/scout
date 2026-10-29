@@ -45,16 +45,22 @@ FreeBSD, and OpenWrt, live process findings and syslog-based
 authentication/reconnaissance incidents are reported when the relevant logs or
 services exist.
 
-### Fallback Support
+### Linux Fallback Support
+
+Both fallbacks collect packages only.
 
 - On Debian-family systems without `apt`, Scout falls back to `dpkg`.
 - On RPM-family systems without `dnf`, `tdnf`, or `zypper`, Scout falls back to `rpm`.
 
-Both fallbacks collect packages only. FreeBSD is supported through `pkg` and
-native `procstat`, `pciconf`, `usbconfig`, `kldstat`, `kenv`, and
-`master.passwd` adapters. NetBSD, NixOS, and Gentoo are recognized by the core
-distribution database, but their `pkgsrc`, `nix`, and Portage adapters are not
-implemented yet.
+### FreeBSD Support
+
+FreeBSD is supported through `pkg` and native `procstat`, `pciconf`, `usbconfig`,
+`kldstat`, `kenv`, and `master.passwd` adapters.
+
+### Not Implemented Yet
+
+NetBSD, NixOS, and Gentoo are recognized by the core distribution database, but their
+`pkgsrc`, `nix`, and Portage adapters are not implemented yet.
 
 ## Requirements
 
