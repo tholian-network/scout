@@ -17,7 +17,7 @@ func parseProcstatFiles(buffer string) map[uint]file_info {
 
 		fields := strings.Fields(lines[l])
 
-		if len(fields) >= 10 && fields[0] == "PID" {
+		if fields[0] != "PID" && len(fields) >= 10 {
 
 			pid, err := strconv.ParseUint(fields[0], 10, 64)
 
