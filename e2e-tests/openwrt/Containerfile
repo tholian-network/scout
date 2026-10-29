@@ -1,8 +1,9 @@
 FROM docker.io/openwrt/rootfs:x86-64-openwrt-24.10
 
+COPY e2e-tests/openwrt/entrypoint.sh /usr/local/bin/e2e-entrypoint
 COPY e2e-tests/openwrt/setup.sh /usr/local/bin/e2e-setup
 COPY e2e-tests/openwrt/reset.sh /usr/local/bin/e2e-reset
-RUN chmod +x /usr/local/bin/e2e-setup /usr/local/bin/e2e-reset \
+RUN chmod +x /usr/local/bin/e2e-entrypoint /usr/local/bin/e2e-setup /usr/local/bin/e2e-reset \
     && /usr/local/bin/e2e-setup
 
 ENV E2E_PACKAGE=uhttpd
@@ -11,4 +12,5 @@ ENV E2E_OLD_VERSION=1.0
 ENV E2E_PACKAGE_MANAGER=opkg
 ENV E2E_RESET=/usr/local/bin/e2e-reset
 
+ENTRYPOINT ["/usr/local/bin/e2e-entrypoint"]
 CMD ["/tests/e2e", "-test.v"]

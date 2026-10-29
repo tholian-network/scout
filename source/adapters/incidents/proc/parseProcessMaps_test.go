@@ -27,6 +27,30 @@ func TestParseProcessMaps(t *testing.T) {
 
 }
 
+func TestParseProcessMapsWithoutPath(t *testing.T) {
+
+	buffer := []byte("7f004000-7f005000 rw-p 00000000 00:00 0\n")
+
+	entries := parseProcessMaps(buffer)
+
+	if len(entries) != 1 {
+		t.Fatalf("Expected 1 entry, got %d", len(entries))
+	}
+
+	if entries[0].Start != "7f004000" || entries[0].End != "7f005000" {
+		t.Fatalf("Expected 7f004000-7f005000, got %q-%q", entries[0].Start, entries[0].End)
+	}
+
+	if entries[0].Inode != "0" {
+		t.Fatalf("Expected inode 0, got %q", entries[0].Inode)
+	}
+
+	if entries[0].Path != "" {
+		t.Fatalf("Expected empty path, got %q", entries[0].Path)
+	}
+
+}
+
 func TestParseStartTicks(t *testing.T) {
 
 	buffer := []byte("123 (evil process) S 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 999")

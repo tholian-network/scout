@@ -36,9 +36,15 @@ func parseProcessMaps(buffer []byte) []processMap {
 					fields = append(fields, remainder[0:index])
 					remainder = strings.TrimLeft(remainder[index:], " \t")
 				} else {
+					fields = append(fields, remainder)
+					remainder = ""
 					break
 				}
 
+			}
+
+			if len(fields) < 5 {
+				continue
 			}
 
 			address := fields[0]
