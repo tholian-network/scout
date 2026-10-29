@@ -8,19 +8,16 @@ SOURCE_DIR := $(ROOT)/source
 INSIGHTS_DIR := $(ROOT)/../insights
 CORE_DIR := $(ROOT)/../core/source
 TEST_DIR := $(ROOT)/e2e-tests
-BUILD_DIR ?= $(ROOT)/build/linux
-TEST_BUILD_DIR ?= $(ROOT)/build/tests
+BUILD_DIR ?= $(ROOT)/build
 
 GO ?= go
 GOFMT ?= gofmt
-CLANG ?= clang
-LLC ?= llc
 PODMAN ?= podman
-SUDO ?= $(shell if [ "$$EUID" -eq 0 ]; then echo ""; else echo sudo; fi)
 
 GO_TAGS ?= scout
-TARGET_VARIANTS ?= scout
+TARGET_VARIANTS ?= $(GO_TAGS)
 TARGET_ARCHES ?= amd64 arm64
+FREEBSD_ARCHES ?= amd64
 TEST_DISTRIBUTIONS ?= debian alpine archlinux fedora opensuse almalinux rockylinux cblmariner rpm dpkg openwrt
 TEST_ARCHES ?= amd64
 TEST_TIMEOUT ?= 10m
@@ -32,12 +29,14 @@ help:
 	@echo "Usage: make <target>"
 	@echo ""
 	@echo "  help          Show this help"
-	@echo "  build         Build all Linux CLI binaries"
-	@echo "  check         Run formatting, vet, and unit tests"
+	@echo "  build         Build all CLI binaries"
 	@echo "  build-tests   Build all end-to-end test binaries"
 	@echo "  build-images  Build all end-to-end test containers"
+	@echo "  check         Run formatting, vet, and unit tests"
 	@echo "  test          Run end-to-end tests inside test containers"
+	@echo "  test-freebsd  Run end-to-end tests inside the FreeBSD QEMU VM"
 	@echo "  clean         Remove generated binaries and test logs"
+	@echo "  clean-images  Remove end-to-end test container images"
 
 .PHONY: check-go-tools
 check-go-tools:
@@ -48,6 +47,13 @@ check-go-tools:
 check-podman:
 	@command -v $(PODMAN) >/dev/null 2>&1 || { echo "missing podman: $(PODMAN)"; exit 1; }
 	@$(PODMAN) info >/dev/null 2>&1 || { echo "podman is not usable: $(PODMAN)"; exit 1; }
+
+.PHONY: check-qemu-tools
+check-qemu-tools:
+	@for tool in qemu-system-x86_64 qemu-img ssh scp ssh-keygen xz; do \
+		command -v $$tool >/dev/null 2>&1 || { echo "missing $$tool"; exit 1; }; \
+	done
+	@command -v genisoimage >/dev/null 2>&1 || command -v mkisofs >/dev/null 2>&1 || command -v xorriso >/dev/null 2>&1 || { echo "missing genisoimage, mkisofs, or xorriso"; exit 1; }
 
 .PHONY: check-insights
 check-insights:
@@ -77,21 +83,28 @@ check-core:
 
 .PHONY: build
 build: | check-go-tools check-insights check-core
-	@mkdir -p "$(BUILD_DIR)"
+	@mkdir -p "$(BUILD_DIR)/linux"
 	@for variant in $(TARGET_VARIANTS); do \
 		for arch in $(TARGET_ARCHES); do \
-			echo "Build $$variant / $$arch"; \
-			CGO_ENABLED=0 GOOS=linux GOARCH=$$arch $(GO) -C "$(SOURCE_DIR)" build -tags "$$variant" -o "$(BUILD_DIR)/tholian-$$variant-$$arch" ./cmds/tholian-scout/main.go || exit 1; \
+			echo "Build linux $$variant / $$arch"; \
+			CGO_ENABLED=0 GOOS=linux GOARCH=$$arch $(GO) -C "$(SOURCE_DIR)" build -tags "$$variant" -o "$(BUILD_DIR)/linux/tholian-$$variant-$$arch" ./cmds/tholian-scout || exit 1; \
+		done; \
+	done
+	@mkdir -p "$(BUILD_DIR)/freebsd"
+	@for variant in $(TARGET_VARIANTS); do \
+		for arch in $(FREEBSD_ARCHES); do \
+			echo "Build freebsd $$variant / $$arch"; \
+			CGO_ENABLED=0 GOOS=freebsd GOARCH=$$arch $(GO) -C "$(SOURCE_DIR)" build -tags "$$variant" -o "$(BUILD_DIR)/freebsd/tholian-$$variant-$$arch" ./cmds/tholian-scout || exit 1; \
 		done; \
 	done
 
 .PHONY: build-tests
 build-tests: | check-go-tools check-insights check-core
-	@mkdir -p "$(TEST_BUILD_DIR)"
+	@mkdir -p "$(BUILD_DIR)/tests"
 	@for distro in $(TEST_DISTRIBUTIONS); do \
 		for arch in $(TEST_ARCHES); do \
 			echo "Build tests $$distro / $$arch"; \
-			CGO_ENABLED=0 GOOS=linux GOARCH=$$arch $(GO) -C "$(TEST_DIR)" test -tags "$(GO_TAGS)" -c -o "$(TEST_BUILD_DIR)/$$distro-$$arch" "./$$distro" || exit 1; \
+			CGO_ENABLED=0 GOOS=linux GOARCH=$$arch $(GO) -C "$(TEST_DIR)" test -tags "$(GO_TAGS)" -c -o "$(BUILD_DIR)/tests/$$distro-$$arch" "./$$distro" || exit 1; \
 		done; \
 	done
 
@@ -104,8 +117,15 @@ build-images: | check-podman
 		done; \
 	done
 
+.PHONY: check-freebsd
+check-freebsd: | check-go-tools check-insights check-core
+	@mkdir -p "$(BUILD_DIR)/tests"
+	CGO_ENABLED=0 GOOS=freebsd GOARCH=amd64 $(GO) -C "$(SOURCE_DIR)" vet -tags "$(GO_TAGS)" ./...
+	CGO_ENABLED=0 GOOS=freebsd GOARCH=amd64 $(GO) -C "$(SOURCE_DIR)" build -tags "$(GO_TAGS)" ./...
+	CGO_ENABLED=0 GOOS=freebsd GOARCH=amd64 $(GO) -C "$(TEST_DIR)" test -tags "$(GO_TAGS)" -c -o "$(BUILD_DIR)/tests/freebsd-amd64" ./freebsd
+
 .PHONY: check
-check: | check-go-tools check-insights check-core
+check: | check-go-tools check-insights check-core check-freebsd
 	@failed=0; \
 	for dir in "$(SOURCE_DIR)" "$(TEST_DIR)"; do \
 		files="$$(cd "$$dir" && $(GOFMT) -l . 2>&1)"; \
@@ -129,10 +149,14 @@ test: | check-podman build-tests build-images
 		for arch in $(TEST_ARCHES); do \
 			echo "Test $$distro / $$arch"; \
 			$(PODMAN) run --rm --platform linux/$$arch \
-				-v "$(TEST_BUILD_DIR)/$$distro-$$arch:/tests/e2e:ro" \
+				-v "$(BUILD_DIR)/tests/$$distro-$$arch:/tests/e2e:ro" \
 				"$(E2E_IMAGE):$$distro-$$arch" /tests/e2e -test.v -test.timeout "$(TEST_TIMEOUT)" || exit 1; \
 		done; \
 	done
+
+.PHONY: test-freebsd
+test-freebsd: | check-go-tools check-insights check-core check-qemu-tools
+	$(GO) -C "$(TEST_DIR)" run ./freebsd/cmd/freebsd-runner -root "$(TEST_DIR)" -test-timeout "$(TEST_TIMEOUT)"
 
 .PHONY: clean-images
 clean-images: | check-podman
@@ -144,4 +168,4 @@ clean-images: | check-podman
 
 .PHONY: clean
 clean:
-	rm -rf "$(BUILD_DIR)" "$(TEST_BUILD_DIR)"
+	rm -rf "$(BUILD_DIR)/freebsd" "$(BUILD_DIR)/linux" "$(BUILD_DIR)/tests"

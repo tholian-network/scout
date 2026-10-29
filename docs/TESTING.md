@@ -16,6 +16,7 @@ host inventory APIs.
 | `debian` | `debian:bookworm-slim` | `apt` | `apache2-bin` | `2.4.62-1~deb12u1` | `apache2` | `apache2-bin` via `apache2` | `> 2.4.62-1~deb12u1` | `dpkg -i` old packages |
 | `dpkg` | `debian:bookworm-slim` | `dpkg` | `apache2-bin` | `2.4.62-1~deb12u1` | not used | not tested | not tested | none |
 | `fedora` | `fedora:43` | `dnf` | `httpd-core` | `2.4.63-4.fc43` | `httpd` | `httpd-core` via `httpd` | `> 2.4.63-4.fc43` | `rpm -U --oldpackage` |
+| `freebsd` | FreeBSD 15.1-RELEASE QEMU | `pkg` | `e2e-scout-pkg` | `1.0` | `e2e-scout-pkg` | `e2e-scout-pkg` via `e2e-scout-pkg` | `> 1.0` | `pkg add -f` 1.0 |
 | `opensuse` | `opensuse/leap:15.6` | `zypper` | `apache2-prefork` | `2.4.58-150600.3.1` | `httpd-prefork` | `apache2-prefork` via `httpd-prefork` | `> 2.4.58-150600.3.1` | `rpm -U --oldpackage` |
 | `openwrt` | `openwrt/rootfs:x86-64-openwrt-24.10` | `opkg` | `uhttpd` | `1.0` | not used | not tested | `> 1.0` | `opkg install` old `.ipk` |
 | `rockylinux` | `rockylinux:9` | `dnf` | `httpd-core` | `2.4.57-11.el9_4.1` | `httpd` | `httpd-core` via `httpd` | `> 2.4.57-11.el9_4.1` | `rpm -U --oldpackage` |
@@ -40,6 +41,7 @@ implement updates.
 | `debian` | `apache2`, `apache2-bin`, `apache2-data`, `apache2-utils` | Debian snapshot `20240817T023924Z` |
 | `dpkg` | `apache2-bin`, `apache2-data` | Debian snapshot `20240817T023924Z` |
 | `fedora` | `httpd`, `httpd-core`, `httpd-tools`, `mod_lua`, `httpd-filesystem` | Fedora Koji `httpd-2.4.63-4.fc43` |
+| `freebsd` | `e2e-scout-pkg` `1.0` and `2.0` | Locally generated `pkg` repository in the QEMU VM |
 | `opensuse` | `apache2`, `apache2-prefork`, `apache2-utils` | openSUSE Leap 15.6 OSS repository |
 | `openwrt` | `uhttpd` `1.0` and `2.0` | Locally generated `.ipk` feed under `/var/cache/e2e/feed` |
 | `rockylinux` | `httpd`, `httpd-core`, `httpd-tools`, `mod_lua`, `httpd-filesystem` | Rocky Linux 9.4 vault AppStream |
@@ -65,6 +67,21 @@ Full test targets (`almalinux`, `alpine`, `archlinux`, `cblmariner`, `debian`,
   SSHD login, so the syslog adapter must report a `Recon` incident for
   `203.0.113.7`. It also starts `/tmp/busybox`, so the procfs adapter must report
   a `Destroy` incident for the writable-path process.
+
+The `freebsd` target runs outside Podman in a QEMU-managed FreeBSD 15.1 VM.
+It verifies the full inventory suite with `pkg`, `procstat`, `pciconf`,
+`usbconfig`, `kldstat`, `kenv`, `master.passwd`, `df`, Go network interfaces,
+and FreeBSD syslog. It uses a locally generated two-version `e2e-scout-pkg`
+repository, so it does not depend on moving FreeBSD mirrors. The VM image is
+pinned to:
+
+```text
+FreeBSD-15.1-RELEASE-amd64-BASIC-CLOUDINIT-ufs.qcow2.xz
+SHA256 e4ca4db889f8559c9b9dfcacc70405c038476f4b6d41649b152d3809a2ed9e1f
+```
+
+Podman cannot run FreeBSD containers on a Linux kernel host, so `freebsd` is
+not part of `TEST_DISTRIBUTIONS` or the default `make test` matrix.
 
 The `rpm` target verifies only:
 
@@ -108,6 +125,9 @@ make test TEST_DISTRIBUTIONS="cblmariner rpm"
 
 # Build test binaries without running containers
 make build-tests TEST_DISTRIBUTIONS="cblmariner rpm"
+
+# Run the FreeBSD QEMU target
+make test-freebsd
 ```
 
 ## Maintaining This Document
