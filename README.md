@@ -7,7 +7,7 @@ reports including all necessary data and writes them to an external file.
 ## Platform Support
 
 Scout detects distributions through `/etc/os-release` and collects inventory
-through Linux kernel interfaces. The following distributions and package
+through platform-specific interfaces. The following distributions and package
 managers are supported:
 
 | Distribution             | Package Manager | Antiques | Packages | Devices | Drives | Incidents | Networks | Programs | Services | Updates | Users |
@@ -21,6 +21,7 @@ managers are supported:
 | CentOS                   | `dnf`           | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
 | Debian                   | `apt`           | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
 | Fedora                   | `dnf`           | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
+| FreeBSD                  | `pkg`           | yes      | yes      | yes     | yes    | partial   | yes      | yes      | yes      | yes     | yes   |
 | Linux Mint               | `apt`           | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
 | Manjaro                  | `pacman`        | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
 | OpenWrt                  | `opkg`          | yes      | yes      | yes     | yes    | partial   | yes      | yes      | yes      | yes     | yes   |
@@ -38,8 +39,9 @@ implemented. `partial` means incidents come from live process analysis and from
 syslog sources when available, but historical journal entries are not collected.
 
 Incidents are collected through `systemd`/`journalctl` where available, through
-`procfs` process analysis on Linux, and through syslog files or OpenWrt
-`logread`. On Alpine Linux and OpenWrt, live process findings and syslog-based
+`procfs` process analysis on Linux, through `procstat` process analysis on
+FreeBSD, and through syslog files or OpenWrt `logread`. On Alpine Linux,
+FreeBSD, and OpenWrt, live process findings and syslog-based
 authentication/reconnaissance incidents are reported when the relevant logs or
 services exist.
 
@@ -48,9 +50,11 @@ services exist.
 - On Debian-family systems without `apt`, Scout falls back to `dpkg`.
 - On RPM-family systems without `dnf`, `tdnf`, or `zypper`, Scout falls back to `rpm`.
 
-Both fallbacks collect packages only. FreeBSD, NetBSD, NixOS, and Gentoo are
-recognized by the core distribution database, but their `pkg`, `pkgsrc`, `nix`,
-and Portage adapters are not implemented yet.
+Both fallbacks collect packages only. FreeBSD is supported through `pkg` and
+native `procstat`, `pciconf`, `usbconfig`, `kldstat`, `kenv`, and
+`master.passwd` adapters. NetBSD, NixOS, and Gentoo are recognized by the core
+distribution database, but their `pkgsrc`, `nix`, and Portage adapters are not
+implemented yet.
 
 ## Requirements
 
@@ -97,6 +101,8 @@ sudo env THOLIAN_REPORT="/tmp/tholian-report.json" ./tholian-scout-amd64 collect
 
 Testing requires `make`, `go`, and `podman`.
 
+Testing FreeBSD requires `qemu`, `qemu-user`, `qemu-tools`, `qemu-system-x86` and `qemu-system-x86-firmware`.
+
 ```bash
 # Install dependencies
 sudo pacman -S --needed go make podman;
@@ -108,6 +114,9 @@ make check;
 
 # Containerized end-to-end tests (requires Podman)
 make test;
+
+# FreeBSD end-to-end tests (requires QEMU)
+make test-freebsd;
 ```
 
 `make test` does the following:

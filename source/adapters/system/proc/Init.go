@@ -27,6 +27,20 @@ func Init(console *structs.Console) bool {
 		name = os.Args[0]
 	}
 
+	if kernel == "FreeBSD" {
+
+		if os.Geteuid() == 0 {
+			return true
+		}
+
+		console.Error("")
+		console.Error(name + ": Please execute \"" + name + "\" as \"root\" user")
+		console.Error("")
+
+		return false
+
+	}
+
 	_, err2 := os.Stat("/proc")
 
 	if err2 == nil {
