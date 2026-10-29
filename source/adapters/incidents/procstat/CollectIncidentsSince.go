@@ -15,7 +15,7 @@ func CollectIncidentsSince(system string, since types.Datetime) []structs.Incide
 	if SUPPORTED == true {
 
 		processes := procstat.CollectProcesses()
-		starts := procstat.CollectStartTimes()
+		starts := procstat.CollectProcessStartTimes()
 		mappings := procstat.CollectMappings()
 		seen := make(map[string]bool)
 		self := uint(os.Getpid())

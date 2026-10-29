@@ -39,7 +39,7 @@ func CollectProcesses() []structs.Program {
 		cmd6.Env = append(os.Environ(), "LC_ALL=C")
 		sockets_buffer, err6 := cmd6.Output()
 
-		processes := make([]processInfo, 0)
+		processes := make([]process_info, 0)
 		binary := make(map[uint]string)
 		arguments := make(map[uint]string)
 		environment := make(map[uint]string)
@@ -47,7 +47,7 @@ func CollectProcesses() []structs.Program {
 		sockets := make([]socket_info, 0)
 
 		if err1 == nil {
-			processes = parsePS(string(ps_buffer))
+			processes = parseProcessStatus(string(ps_buffer))
 		}
 
 		if err2 == nil {
