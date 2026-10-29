@@ -41,4 +41,3 @@ func toExfilIncident(system string, datetime string, program structs.Program, ev
 	return incident
 
 }
-

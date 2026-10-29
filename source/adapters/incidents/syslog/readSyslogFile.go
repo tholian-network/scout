@@ -54,4 +54,3 @@ func readSyslogFile(name string) ([]byte, error) {
 	return buffer, nil
 
 }
-

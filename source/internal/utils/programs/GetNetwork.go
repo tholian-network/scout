@@ -56,4 +56,3 @@ func GetNetwork(program structs.Program) string {
 	return ""
 
 }
-

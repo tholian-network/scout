@@ -16,35 +16,43 @@ func CollectDrives() []structs.Drive {
 
 		if err == nil && len(buffer) > 0 {
 
-			lines := strings.Split(strings.TrimSpace(string(buffer)), "\n")
-			headers := utils_strings.Split(lines[0], " ")
+			lines := strings.Split(strings.TrimSpace(buffer), "\n")
 
-			for l := 1; l < len(lines); l++ {
+			if len(lines) > 0 {
 
-				chunks := utils_strings.Split(lines[l], " ")
-				drive := structs.NewDrive(chunks[0], "local")
+				headers := utils_strings.Split(lines[0], " ")
 
-				for c := 0; c < len(chunks) && c < len(headers); c++ {
+				for l := 1; l < len(lines); l++ {
 
-					if headers[c] == "Filesystem" {
-						drive.SetName(chunks[c])
-					} else if headers[c] == "Size" {
-						drive.SetSize(toUint64(chunks[c]))
-					} else if headers[c] == "Used" {
-						drive.SetUsed(toUint64(chunks[c]))
-					} else if headers[c] == "Avail" || headers[c] == "Available" {
-						drive.SetFree(toUint64(chunks[c]))
-					} else if headers[c] == "Use%" {
-						// Do Nothing
+					chunks := utils_strings.Split(lines[l], " ")
+
+					if len(chunks) == 0 {
+						continue
 					}
 
-				}
+					drive := structs.NewDrive(chunks[0], "local")
 
-				if len(chunks) > 0 {
-					drive.SetMountpoint(chunks[len(chunks)-1])
-				}
+					for c := 0; c < len(chunks) && c < len(headers); c++ {
 
-				result = append(result, drive)
+						if headers[c] == "Filesystem" {
+							drive.SetName(chunks[c])
+						} else if headers[c] == "Size" {
+							drive.SetSize(toUint64(chunks[c]))
+						} else if headers[c] == "Used" {
+							drive.SetUsed(toUint64(chunks[c]))
+						} else if headers[c] == "Avail" || headers[c] == "Available" {
+							drive.SetFree(toUint64(chunks[c]))
+						}
+
+					}
+
+					if len(chunks) > 0 {
+						drive.SetMountpoint(chunks[len(chunks)-1])
+					}
+
+					result = append(result, drive)
+
+				}
 
 			}
 
@@ -55,3 +63,4 @@ func CollectDrives() []structs.Drive {
 	return result
 
 }
+

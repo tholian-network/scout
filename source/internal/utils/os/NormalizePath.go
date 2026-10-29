@@ -24,4 +24,3 @@ func NormalizePath(value string) string {
 	return path.Clean(value)
 
 }
-

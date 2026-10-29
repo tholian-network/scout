@@ -27,4 +27,3 @@ func TestAnalyzeEnvironmentTrustedOnly(t *testing.T) {
 	}
 
 }
-

@@ -10,4 +10,3 @@ func IsWeekday(value string) bool {
 	return false
 
 }
-

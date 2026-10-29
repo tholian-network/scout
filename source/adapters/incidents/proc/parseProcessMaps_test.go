@@ -61,4 +61,3 @@ func TestParseStartTicks(t *testing.T) {
 	}
 
 }
-

@@ -53,4 +53,3 @@ func parseFields(line string) (string, string, string) {
 	return "", "", ""
 
 }
-

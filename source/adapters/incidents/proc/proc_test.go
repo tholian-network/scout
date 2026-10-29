@@ -22,4 +22,3 @@ func programWithArguments(name string, command string, arguments ...string) stru
 	return program
 
 }
-

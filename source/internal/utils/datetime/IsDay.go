@@ -17,4 +17,3 @@ func IsDay(value string) bool {
 	return true
 
 }
-

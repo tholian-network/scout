@@ -58,4 +58,3 @@ func ParseIncidents(buffer []byte, system string) []structs.Incident {
 	return result
 
 }
-

@@ -13,4 +13,3 @@ func Truncate(value string, length int) string {
 	return value
 
 }
-

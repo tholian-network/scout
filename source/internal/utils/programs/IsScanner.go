@@ -31,4 +31,3 @@ func IsScanner(program structs.Program) bool {
 	return false
 
 }
-

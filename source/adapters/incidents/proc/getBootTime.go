@@ -4,7 +4,7 @@ import "os"
 import "strconv"
 import "strings"
 
-func getBootTime() (uint64) {
+func getBootTime() uint64 {
 
 	buffer, err := os.ReadFile("/proc/stat")
 

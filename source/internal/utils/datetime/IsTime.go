@@ -25,4 +25,3 @@ func IsTime(value string) bool {
 	return true
 
 }
-

@@ -12,4 +12,3 @@ func TestAnalyzeExecutableInWritablePath(t *testing.T) {
 	}
 
 }
-

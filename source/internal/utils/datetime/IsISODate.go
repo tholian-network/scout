@@ -13,4 +13,3 @@ func IsISODate(value string) bool {
 	return IsYear(value[0:4]) && IsISOMonth(value[5:7]) && IsDay(value[8:10])
 
 }
-

@@ -32,4 +32,3 @@ func TestIsTrustedPath(t *testing.T) {
 	}
 
 }
-

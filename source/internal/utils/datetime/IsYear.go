@@ -17,4 +17,3 @@ func IsYear(value string) bool {
 	return true
 
 }
-

@@ -10,7 +10,7 @@ func AnalyzeConnections(system string, datetime string, program structs.Program)
 	var result []structs.Incident
 
 	is_backdoor := utils_programs.IsBackdoor(program)
-	is_shell    := utils_programs.IsShell(program)
+	is_shell := utils_programs.IsShell(program)
 
 	if is_backdoor == false && is_shell == false {
 		return result
@@ -60,4 +60,3 @@ func AnalyzeConnections(system string, datetime string, program structs.Program)
 	return result
 
 }
-

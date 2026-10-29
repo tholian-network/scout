@@ -25,4 +25,3 @@ func isPriority(value string) bool {
 	return false
 
 }
-

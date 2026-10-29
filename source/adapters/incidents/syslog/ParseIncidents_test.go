@@ -1,5 +1,6 @@
 package syslog
 
+import "strings"
 import "testing"
 import "time"
 
@@ -71,6 +72,25 @@ func TestParseIncidentsIgnoresUnknownLines(t *testing.T) {
 
 	if len(incidents) != 0 {
 		t.Fatalf("Expected 0 incidents, got %d", len(incidents))
+	}
+
+}
+
+func TestParseIncidentsFreeBSDSyslogSSHD(t *testing.T) {
+
+	line := time.Now().Format("Jan 02 15:04:05") + " freebsd sshd[1234]: Failed password for invalid user test from 203.0.113.7 port 5555 ssh2\n"
+	incidents := ParseIncidents([]byte(line), "test")
+
+	if len(incidents) != 1 {
+		t.Fatalf("Expected 1 incident, got %d", len(incidents))
+	}
+
+	if incidents[0].Type != "Recon" {
+		t.Fatalf("Expected Recon incident, got %s", incidents[0].Type)
+	}
+
+	if len(incidents[0].Networks) == 0 || strings.HasPrefix(incidents[0].Networks[0].Subnet, "203.0.113.7") == false {
+		t.Fatalf("Expected 203.0.113.7 network, got %#v", incidents[0].Networks)
 	}
 
 }

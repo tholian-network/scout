@@ -5,7 +5,7 @@ import "os"
 import "strconv"
 import "time"
 
-func getProcessStartedAt(pid uint) (*types.Datetime) {
+func getProcessStartedAt(pid uint) *types.Datetime {
 
 	var result *types.Datetime
 
@@ -32,4 +32,3 @@ func getProcessStartedAt(pid uint) (*types.Datetime) {
 	return result
 
 }
-

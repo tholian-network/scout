@@ -3,7 +3,7 @@ package proc
 import "strconv"
 import "strings"
 
-func getProcessTicks(buffer []byte) (uint64) {
+func getProcessTicks(buffer []byte) uint64 {
 
 	stat := strings.TrimSpace(string(buffer))
 	index := strings.LastIndex(stat, ")")

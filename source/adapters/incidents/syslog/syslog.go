@@ -10,9 +10,15 @@ var Logread string
 
 var candidates = []string{
 	"/var/log/auth.log",
+	"/var/log/auth.log.0",
 	"/var/log/messages",
+	"/var/log/messages.0",
 	"/var/log/secure",
+	"/var/log/security",
+	"/var/log/security.0",
 	"/var/log/syslog",
+	"/var/log/all.log",
+	"/var/log/all.log.0",
 }
 
 func init() {

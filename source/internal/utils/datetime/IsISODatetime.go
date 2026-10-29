@@ -15,4 +15,3 @@ func IsISODateTime(value string) bool {
 	return IsISODate(value[0:10]) && IsTime(value[11:19])
 
 }
-

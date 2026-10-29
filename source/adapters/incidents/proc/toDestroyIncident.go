@@ -41,4 +41,3 @@ func toDestroyIncident(system string, datetime string, program structs.Program, 
 	return incident
 
 }
-

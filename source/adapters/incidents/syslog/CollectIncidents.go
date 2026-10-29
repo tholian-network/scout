@@ -97,4 +97,3 @@ func CollectIncidents(system string) []structs.Incident {
 	return result
 
 }
-
