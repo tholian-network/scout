@@ -60,4 +60,3 @@ func CollectUpdates() []structs.Update {
 	return collected
 
 }
-
