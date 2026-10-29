@@ -170,4 +170,3 @@ func CollectProcesses() []structs.Program {
 	return collected
 
 }
-

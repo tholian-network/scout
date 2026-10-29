@@ -59,4 +59,3 @@ func parseSockstat(buffer string) []socket_info {
 	return collected
 
 }
-

@@ -27,4 +27,3 @@ func parseProcstatBinary(buffer string) map[uint]string {
 	return collected
 
 }
-

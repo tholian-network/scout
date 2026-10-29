@@ -17,4 +17,3 @@ func CollectServices() []structs.Program {
 	return collected
 
 }
-

@@ -173,4 +173,3 @@ func CollectUsers() []types.User {
 	return collected
 
 }
-

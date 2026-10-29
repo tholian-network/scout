@@ -113,4 +113,3 @@ func CollectUSB() []structs.Device {
 	return collected
 
 }
-

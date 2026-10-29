@@ -50,4 +50,3 @@ func CollectKernelEnvironment() map[string]string {
 	return collected
 
 }
-

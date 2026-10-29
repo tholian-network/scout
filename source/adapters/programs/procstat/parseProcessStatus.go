@@ -41,4 +41,3 @@ func parseProcessStatus(buffer string) []process_info {
 	return collected
 
 }
-

@@ -80,4 +80,3 @@ func CollectKernelModules() []string {
 	return collected
 
 }
-

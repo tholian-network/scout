@@ -2,34 +2,48 @@ package etc
 
 import "tholian-insights/distributions"
 import "tholian-core/structs"
+import "tholian-scout/adapters/system/kenv"
 import "encoding/hex"
 import "math/rand"
 import "os"
+import "runtime"
 import "strings"
 
 func toSystem() structs.System {
 
 	var system structs.System = structs.NewSystem()
 
-	buffer1, err1 := os.ReadFile("/etc/os-release")
+	if runtime.GOOS == "linux" {
 
-	if err1 == nil {
+		buffer1, err1 := os.ReadFile("/etc/os-release")
 
-		keywords := toKeywords(buffer1)
-		distributions := distributions.Distributions.QueryByKeywords(keywords)
+		if err1 == nil {
 
-		if len(distributions) > 0 {
+			keywords := toKeywords(buffer1)
+			distributions := distributions.Distributions.QueryByKeywords(keywords)
 
-			candidate := distributions[0]
+			if len(distributions) > 0 {
 
-			distribution := structs.NewDistribution()
-			distribution.SetName(candidate.Name)
-			distribution.SetVersion(candidate.Version)
-			distribution.SetManager(candidate.Manager)
-			distribution.SetVendor(candidate.Vendor)
+				candidate := distributions[0]
 
+				distribution := structs.NewDistribution()
+				distribution.SetName(candidate.Name)
+				distribution.SetVersion(candidate.Version)
+				distribution.SetManager(candidate.Manager)
+				distribution.SetVendor(candidate.Vendor)
+
+				system.SetDistribution(distribution)
+
+			}
+
+		}
+
+	} else if runtime.GOOS == "freebsd" {
+
+		distribution := toFreeBSDDistribution()
+
+		if distribution.IsValid() == true {
 			system.SetDistribution(distribution)
-
 		}
 
 	}
@@ -49,9 +63,29 @@ func toSystem() structs.System {
 		err := os.WriteFile("/etc/machine-id", []byte(uuid), 0444)
 
 		if err == nil {
+
 			system.SetName(uuid)
+
 		} else if hostname, hostname_err := os.Hostname(); hostname_err == nil && hostname != "" {
+
 			system.SetName(hostname)
+
+		} else if kenv.SUPPORTED == true {
+
+			uuid := kenv.CollectMachineID()
+
+			if uuid != "" {
+				system.SetName(uuid)
+			}
+
+		}
+
+		if system.Name == "" {
+
+			if hostname, hostname_err := os.Hostname(); hostname_err == nil && hostname != "" {
+				system.SetName(hostname)
+			}
+
 		}
 
 	}

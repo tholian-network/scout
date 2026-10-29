@@ -63,4 +63,3 @@ func CollectDrives() []structs.Drive {
 	return result
 
 }
-

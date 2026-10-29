@@ -6,9 +6,10 @@ var SUPPORTED bool = false
 
 func init() {
 
-	_, err := os.Stat("/etc/os-release")
+	_, err1 := os.Stat("/etc/os-release")
+	_, err2 := os.Stat("/bin/freebsd-version")
 
-	if err == nil {
+	if err1 == nil || err2 == nil {
 		SUPPORTED = true
 	}
 

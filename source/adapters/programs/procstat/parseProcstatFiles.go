@@ -45,4 +45,3 @@ func parseProcstatFiles(buffer string) map[uint]file_info {
 	return collected
 
 }
-

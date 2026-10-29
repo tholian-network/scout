@@ -48,4 +48,3 @@ func CollectBoard() structs.Device {
 	return collected
 
 }
-

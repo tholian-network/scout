@@ -18,4 +18,3 @@ func CollectProgram(name string) []structs.Program {
 	return collected
 
 }
-
