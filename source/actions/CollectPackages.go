@@ -6,6 +6,7 @@ import "tholian-scout/adapters/packages/apt"
 import "tholian-scout/adapters/packages/dnf"
 import "tholian-scout/adapters/packages/dpkg"
 import "tholian-scout/adapters/packages/opkg"
+import "tholian-scout/adapters/packages/pkg"
 import "tholian-scout/adapters/packages/pacman"
 import "tholian-scout/adapters/packages/rpm"
 import "tholian-scout/adapters/packages/tdnf"
@@ -172,9 +173,6 @@ func CollectPackages(console *structs.Console, system *structs.System) bool {
 
 	} else if dpkg.SUPPORTED == true {
 
-		// dpkg is used as a fallback when no downstream
-		// Debian family package manager is available
-
 		tmp := dpkg.CollectPackages()
 
 		if len(tmp) > 0 {
@@ -200,9 +198,6 @@ func CollectPackages(console *structs.Console, system *structs.System) bool {
 
 	} else if rpm.SUPPORTED == true {
 
-		// RPM can only CollectPackages() and is used as a fallback
-		// when no downstream package manager is available
-
 		tmp := rpm.CollectPackages()
 
 		if len(tmp) > 0 {
@@ -226,9 +221,32 @@ func CollectPackages(console *structs.Console, system *structs.System) bool {
 		system.SetPackages(collected)
 		result = true
 
-	} else if opkg.SUPPORTED == true {
+	} else if pkg.SUPPORTED == true {
 
-		// openwrt
+		tmp := pkg.CollectPackages()
+
+		if len(tmp) > 0 {
+
+			console.Info("pkg.CollectPackages(): Found " + strconv.Itoa(len(tmp)) + " Packages")
+
+			for _, pkg := range tmp {
+
+				if pkg.IsValid() {
+					collected = append(collected, pkg)
+				}
+
+			}
+
+		} else {
+
+			console.Warn("pkg.CollectPackages(): Found 0 Packages")
+
+		}
+
+		system.SetPackages(collected)
+		result = true
+
+	} else if opkg.SUPPORTED == true {
 
 		tmp := opkg.CollectPackages()
 
@@ -254,8 +272,6 @@ func CollectPackages(console *structs.Console, system *structs.System) bool {
 		result = true
 
 	} else {
-
-		// TODO: pkg.CollectPackages()
 
 		console.Warn("CollectPackages(): Unsupported")
 

@@ -2,6 +2,7 @@ package actions
 
 import "tholian-core/structs"
 import "tholian-scout/adapters/incidents/proc"
+import "tholian-scout/adapters/incidents/procstat"
 import "tholian-scout/adapters/incidents/syslog"
 import "tholian-scout/adapters/incidents/systemd"
 import utils_incidents "tholian-scout/internal/utils/incidents"
@@ -15,6 +16,43 @@ func CollectIncidents(console *structs.Console, system *structs.System) bool {
 
 	collected := make([]structs.Incident, 0)
 	seen := make(map[string]bool)
+
+	if procstat.SUPPORTED == true {
+
+		tmp := procstat.CollectIncidents(system.Name)
+
+		if len(tmp) > 0 {
+
+			console.Info("procstat.CollectIncidents(): Found " + strconv.Itoa(len(tmp)) + " Incidents")
+
+			for _, incident := range tmp {
+
+				if incident.IsValid() {
+
+					identity := utils_incidents.ToIdentity(incident)
+
+					if seen[identity] == false {
+						collected = append(collected, incident)
+						seen[identity] = true
+					}
+
+				}
+
+			}
+
+		} else {
+
+			console.Warn("procstat.CollectIncidents(): Found 0 Incidents")
+
+		}
+
+		result = true
+
+	} else {
+
+		console.Warn("procstat.CollectIncidents(): Unsupported")
+
+	}
 
 	if proc.SUPPORTED == true {
 

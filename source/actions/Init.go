@@ -5,6 +5,8 @@ import "tholian-core/matchers"
 import "tholian-core/structs"
 import "tholian-scout/adapters/system/coreutils"
 import "tholian-scout/adapters/system/etc"
+import "tholian-scout/adapters/system/kenv"
+import "tholian-scout/adapters/system/kldstat"
 import "tholian-scout/adapters/system/proc"
 import "tholian-scout/adapters/system/sys"
 
@@ -26,6 +28,10 @@ func Init(console *structs.Console) *structs.System {
 		kernel_modules := proc.CollectKernelModules()
 		kernel_version := coreutils.CollectKernelVersion()
 
+		if len(kernel_modules) == 0 && kldstat.SUPPORTED == true {
+			kernel_modules = kldstat.CollectKernelModules()
+		}
+
 		if kernel != "" {
 			system.Distribution.SetKernel(kernel)
 		}
@@ -45,8 +51,15 @@ func Init(console *structs.Console) *structs.System {
 	}
 
 	if sys.SUPPORTED == true {
+
 		system.SetBIOS(sys.CollectBIOS())
 		system.SetBoard(sys.CollectBoard())
+
+	} else if kenv.SUPPORTED == true {
+
+		system.SetBIOS(kenv.CollectBIOS())
+		system.SetBoard(kenv.CollectBoard())
+
 	}
 
 	if system.Fingerprint.Timezone != "" {

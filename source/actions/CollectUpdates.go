@@ -5,6 +5,7 @@ import "tholian-scout/adapters/packages/apk"
 import "tholian-scout/adapters/packages/apt"
 import "tholian-scout/adapters/packages/dnf"
 import "tholian-scout/adapters/packages/opkg"
+import "tholian-scout/adapters/packages/pkg"
 import "tholian-scout/adapters/packages/pacman"
 import "tholian-scout/adapters/packages/tdnf"
 import "tholian-scout/adapters/packages/zypper"
@@ -187,6 +188,33 @@ func CollectUpdates(console *structs.Console, system *structs.System) bool {
 		} else {
 
 			console.Warn("zypper.CollectUpdates(): Found 0 Updates")
+
+		}
+
+		system.SetUpdates(collected)
+		result = true
+
+	} else if pkg.SUPPORTED == true {
+
+		// freebsd
+
+		tmp := pkg.CollectUpdates()
+
+		if len(tmp) > 0 {
+
+			console.Info("pkg.CollectUpdates(): Found " + strconv.Itoa(len(tmp)) + " Updates")
+
+			for _, update := range tmp {
+
+				if update.IsValid() {
+					collected = append(collected, update)
+				}
+
+			}
+
+		} else {
+
+			console.Warn("pkg.CollectUpdates(): Found 0 Updates")
 
 		}
 

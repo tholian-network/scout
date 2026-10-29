@@ -6,6 +6,7 @@ import "tholian-scout/adapters/packages/apk"
 import "tholian-scout/adapters/packages/apt"
 import "tholian-scout/adapters/packages/dnf"
 import "tholian-scout/adapters/packages/opkg"
+import "tholian-scout/adapters/packages/pkg"
 import "tholian-scout/adapters/packages/pacman"
 import "tholian-scout/adapters/packages/tdnf"
 import "tholian-scout/adapters/packages/zypper"
@@ -57,6 +58,10 @@ func UpdatePackage(console *structs.Console, system *structs.System, search matc
 		} else if zypper.SUPPORTED == true {
 
 			updated, err = zypper.Update(updates)
+
+		} else if pkg.SUPPORTED == true {
+
+			updated, err = pkg.Update(updates)
 
 		} else if opkg.SUPPORTED == true {
 

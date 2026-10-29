@@ -2,6 +2,7 @@ package actions
 
 import "tholian-core/types"
 import "tholian-core/structs"
+import "tholian-scout/adapters/users/bsdshadow"
 import "tholian-scout/adapters/users/shadow"
 import "tholian-scout/adapters/users/systemd"
 import "strconv"
@@ -14,7 +15,25 @@ func CollectUsers(console *structs.Console, system *structs.System) bool {
 
 	collected := make([]types.User, 0)
 
-	if shadow.SUPPORTED == true {
+	if bsdshadow.SUPPORTED == true {
+
+		tmp := bsdshadow.CollectUsers()
+
+		if len(tmp) > 0 {
+
+			console.Info("bsdshadow.CollectUsers(): Found " + strconv.Itoa(len(tmp)) + " Users")
+
+			for t := 0; t < len(tmp); t++ {
+				collected = append(collected, tmp[t])
+			}
+
+		} else {
+
+			console.Warn("bsdshadow.CollectUsers(): Found 0 Users")
+
+		}
+
+	} else if shadow.SUPPORTED == true {
 
 		tmp := shadow.CollectUsers()
 

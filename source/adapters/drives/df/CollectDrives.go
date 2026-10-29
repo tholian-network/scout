@@ -16,7 +16,7 @@ func CollectDrives() []structs.Drive {
 
 		if err == nil && len(buffer) > 0 {
 
-			lines := strings.Split(strings.TrimSpace(buffer), "\n")
+			lines := strings.Split(strings.TrimSpace(string(buffer)), "\n")
 
 			if len(lines) > 0 {
 

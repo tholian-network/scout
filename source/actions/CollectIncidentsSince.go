@@ -5,6 +5,7 @@ import "tholian-core/structs"
 import "tholian-core/types"
 import utils_incidents "tholian-scout/internal/utils/incidents"
 import "tholian-scout/adapters/incidents/proc"
+import "tholian-scout/adapters/incidents/procstat"
 import "tholian-scout/adapters/incidents/syslog"
 import "tholian-scout/adapters/incidents/systemd"
 import "strconv"
@@ -70,6 +71,44 @@ func CollectIncidentsSince(console *structs.Console, system *structs.System, sea
 
 		for i := 0; i < len(system.Incidents); i++ {
 			seen[utils_incidents.ToIdentity(system.Incidents[i])] = true
+		}
+
+		if procstat.SUPPORTED == true {
+
+			tmp := procstat.CollectIncidentsSince(system.Name, *from)
+
+			if len(tmp) > 0 {
+
+				console.Info("procstat.CollectIncidentsSince(): Found " + strconv.Itoa(len(tmp)) + " Incidents since " + from.String())
+
+				for _, incident := range tmp {
+
+					if until == nil || incident.Datetime.IsBefore(*until) {
+
+						identity := utils_incidents.ToIdentity(incident)
+
+						if seen[identity] == false {
+							system.AddIncident(incident)
+							seen[identity] = true
+							collected += 1
+						}
+
+					}
+
+				}
+
+			} else {
+
+				console.Warn("procstat.CollectIncidentsSince(): Found 0 Incidents since " + from.String())
+
+			}
+
+			result = true
+
+		} else {
+
+			console.Warn("procstat.CollectIncidentsSince(): Unsupported")
+
 		}
 
 		if proc.SUPPORTED == true {

@@ -4,6 +4,7 @@ import "tholian-core/structs"
 import "tholian-scout/adapters/programs/ldd"
 import "tholian-scout/adapters/programs/npm"
 import "tholian-scout/adapters/programs/proc"
+import "tholian-scout/adapters/programs/procstat"
 import "strconv"
 
 func CollectPrograms(console *structs.Console, system *structs.System) bool {
@@ -14,7 +15,43 @@ func CollectPrograms(console *structs.Console, system *structs.System) bool {
 
 	collected := make([]structs.Program, 0)
 
-	if proc.SUPPORTED == true {
+	if procstat.SUPPORTED == true {
+
+		tmp := procstat.CollectPrograms()
+
+		if len(tmp) > 0 {
+
+			console.Info("procstat.CollectPrograms(): Found " + strconv.Itoa(len(tmp)) + " Programs")
+
+			for _, program := range tmp {
+
+				if program.IsProgram() {
+
+					if ldd.SUPPORTED == true && ldd.IsProgram(program) {
+						ldd.AssembleProgramFilesystem(&program)
+					}
+
+					if npm.SUPPORTED == true && npm.IsProgram(program) {
+						npm.AssembleProgramPackages(&program)
+						npm.AssembleProgramDependencies(&program)
+					}
+
+					collected = append(collected, program)
+
+				}
+
+			}
+
+		} else {
+
+			console.Warn("procstat.CollectPrograms(): Found 0 Programs")
+
+		}
+
+		system.SetPrograms(collected)
+		result = true
+
+	} else if proc.SUPPORTED == true {
 
 		tmp := proc.CollectPrograms()
 

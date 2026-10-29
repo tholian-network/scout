@@ -3,6 +3,7 @@ package actions
 import "tholian-core/structs"
 import "tholian-scout/adapters/programs/npm"
 import "tholian-scout/adapters/programs/proc"
+import "tholian-scout/adapters/programs/procstat"
 import "strconv"
 
 func CollectServices(console *structs.Console, system *structs.System) bool {
@@ -13,7 +14,39 @@ func CollectServices(console *structs.Console, system *structs.System) bool {
 
 	collected := make([]structs.Program, 0)
 
-	if proc.SUPPORTED == true {
+	if procstat.SUPPORTED == true {
+
+		tmp := procstat.CollectServices()
+
+		if len(tmp) > 0 {
+
+			console.Info("procstat.CollectServices(): Found " + strconv.Itoa(len(tmp)) + " Services")
+
+			for _, program := range tmp {
+
+				if program.IsService() {
+
+					if npm.SUPPORTED == true && npm.IsProgram(program) {
+						npm.AssembleProgramPackages(&program)
+						npm.AssembleProgramDependencies(&program)
+					}
+
+					collected = append(collected, program)
+
+				}
+
+			}
+
+		} else {
+
+			console.Warn("procstat.CollectServices(): Found 0 Services")
+
+		}
+
+		system.SetServices(collected)
+		result = true
+
+	} else if proc.SUPPORTED == true {
 
 		tmp := proc.CollectServices()
 
