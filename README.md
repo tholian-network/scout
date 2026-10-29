@@ -4,6 +4,48 @@
 Tholian® Scout is the Inventory Agent for the Tholian Network. It collect system
 reports including all necessary data and writes them to an external file.
 
+## Platform Support
+
+Scout detects distributions through `/etc/os-release` and collects inventory
+through Linux kernel interfaces. The following distributions and package
+managers are supported:
+
+| Distribution             | Package Manager | Antiques | Packages | Devices | Drives | Incidents | Networks | Programs | Services | Updates | Users |
+|--------------------------|-----------------|----------|----------|---------|--------|-----------|----------|----------|----------|---------|-------|
+| AlmaLinux                | `dnf`           | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
+| Alpine Linux             | `apk`           | yes      | yes      | yes     | yes    | no        | yes      | yes      | yes      | yes     | yes   |
+| Amazon Linux             | `dnf`           | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
+| Antergos                 | `pacman`        | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
+| Arch Linux               | `pacman`        | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
+| CBL-Mariner              | `tdnf`          | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
+| CentOS                   | `dnf`           | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
+| Debian                   | `apt`           | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
+| Fedora                   | `dnf`           | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
+| Linux Mint               | `apt`           | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
+| Manjaro                  | `pacman`        | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
+| OpenWrt                  | `opkg`          | yes      | yes      | yes     | yes    | no        | yes      | yes      | yes      | yes     | yes   |
+| openSUSE                 | `zypper`        | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
+| Oracle Linux             | `dnf`           | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
+| Photon OS                | `tdnf`          | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
+| Red Hat Enterprise Linux | `dnf`           | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
+| Rocky Linux              | `dnf`           | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
+| SUSE Linux Enterprise    | `zypper`        | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
+| Trisquel                 | `apt`           | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
+| Ubuntu                   | `apt`           | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
+
+`yes` means a collector is implemented for that datatype. `no` means it is not
+implemented.
+
+Incidents currently require `systemd`/`journalctl`.
+Alpine Linux and OpenWrt use other init systems.
+
+- On Debian-family systems without `apt`, Scout falls back to `dpkg`.
+- On RPM-family systems without `dnf`, `tdnf`, or `zypper`, Scout falls back to `rpm`.
+
+Both fallbacks collect packages only. FreeBSD, NetBSD, NixOS, and Gentoo are
+recognized by the core distribution database, but their `pkg`, `pkgsrc`, `nix`,
+and Portage adapters are not implemented yet.
+
 ## Requirements
 
 The module is built using Go's module system. In the Tholian Network, all
