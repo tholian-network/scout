@@ -13,7 +13,7 @@ managers are supported:
 | Distribution             | Package Manager | Antiques | Packages | Devices | Drives | Incidents | Networks | Programs | Services | Updates | Users |
 |--------------------------|-----------------|----------|----------|---------|--------|-----------|----------|----------|----------|---------|-------|
 | AlmaLinux                | `dnf`           | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
-| Alpine Linux             | `apk`           | yes      | yes      | yes     | yes    | no        | yes      | yes      | yes      | yes     | yes   |
+| Alpine Linux             | `apk`           | yes      | yes      | yes     | yes    | partial   | yes      | yes      | yes      | yes     | yes   |
 | Amazon Linux             | `dnf`           | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
 | Antergos                 | `pacman`        | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
 | Arch Linux               | `pacman`        | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
@@ -23,7 +23,7 @@ managers are supported:
 | Fedora                   | `dnf`           | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
 | Linux Mint               | `apt`           | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
 | Manjaro                  | `pacman`        | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
-| OpenWrt                  | `opkg`          | yes      | yes      | yes     | yes    | no        | yes      | yes      | yes      | yes     | yes   |
+| OpenWrt                  | `opkg`          | yes      | yes      | yes     | yes    | partial   | yes      | yes      | yes      | yes     | yes   |
 | openSUSE                 | `zypper`        | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
 | Oracle Linux             | `dnf`           | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
 | Photon OS                | `tdnf`          | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
@@ -34,10 +34,14 @@ managers are supported:
 | Ubuntu                   | `apt`           | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
 
 `yes` means a collector is implemented for that datatype. `no` means it is not
-implemented.
+implemented. `partial` means incidents come from live process analysis and from
+syslog sources when available, but historical journal entries are not collected.
 
-Incidents currently require `systemd`/`journalctl`.
-Alpine Linux and OpenWrt use other init systems.
+Incidents are collected through `systemd`/`journalctl` where available, through
+`procfs` process analysis on Linux, and through syslog files or OpenWrt
+`logread`. On Alpine Linux and OpenWrt, live process findings and syslog-based
+authentication/reconnaissance incidents are reported when the relevant logs or
+services exist.
 
 ### Fallback Support
 

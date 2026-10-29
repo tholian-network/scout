@@ -61,6 +61,10 @@ Full test targets (`almalinux`, `alpine`, `archlinux`, `cblmariner`, `debian`,
 - The service tests find the expected listening service.
 - The generic device, drive, incident, network, program, and user tests pass or
   skip when the container runtime does not expose the required resources.
+- The `alpine` target starts BusyBox `syslogd` and injects a synthetic failed
+  SSHD login, so the syslog adapter must report a `Recon` incident for
+  `203.0.113.7`. It also starts `/tmp/busybox`, so the procfs adapter must report
+  a `Destroy` incident for the writable-path process.
 
 The `rpm` target verifies only:
 
@@ -82,6 +86,11 @@ so it does not depend on moving OpenWrt repositories. It verifies:
 - `SearchPackages` finds `uhttpd`.
 - `CollectUpdates` reports a `uhttpd` update newer than `1.0`.
 - `SearchUpdates` finds the `uhttpd` update.
+
+The `openwrt` target also starts `/tmp/busybox`, so the procfs incident adapter
+must report a `Destroy` incident for that writable-path process. OpenWrt
+`logread` and Dropbear parsing are covered by unit fixtures because the minimal
+container image does not run `logd`.
 
 Service, antique, and update-application tests are not run for `openwrt`.
 
