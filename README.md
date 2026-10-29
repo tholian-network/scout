@@ -39,6 +39,8 @@ implemented.
 Incidents currently require `systemd`/`journalctl`.
 Alpine Linux and OpenWrt use other init systems.
 
+### Fallback Support
+
 - On Debian-family systems without `apt`, Scout falls back to `dpkg`.
 - On RPM-family systems without `dnf`, `tdnf`, or `zypper`, Scout falls back to `rpm`.
 

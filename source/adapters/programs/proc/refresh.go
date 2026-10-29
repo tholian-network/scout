@@ -8,9 +8,10 @@ import "strings"
 
 func refresh() {
 
-	pidcur := StatPID()
-
-	if pidcur < MaxPID {
+	// StatPID() reports the number of forks since boot, not the current PID
+	// limit. Gating on it permanently stopped refreshes on long-running systems
+	// once the cumulative fork count exceeded pid_max.
+	if MaxPID > 0 {
 
 		folders, err0 := os.ReadDir("/proc")
 

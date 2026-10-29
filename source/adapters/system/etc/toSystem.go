@@ -50,6 +50,8 @@ func toSystem() structs.System {
 
 		if err == nil {
 			system.SetName(uuid)
+		} else if hostname, hostname_err := os.Hostname(); hostname_err == nil && hostname != "" {
+			system.SetName(hostname)
 		}
 
 	}
