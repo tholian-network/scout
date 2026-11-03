@@ -12,12 +12,19 @@ import "tholian-scout/adapters/packages/tdnf"
 import "tholian-scout/adapters/packages/zypper"
 import "strconv"
 
-func UpdatePackages(console *structs.Console, system *structs.System, searches []matchers.Package) bool {
+// UpdatePackages returns the remaining available updates
+func UpdatePackages(console *structs.Console, system *structs.System, searches []matchers.Package) []structs.Update {
 
-	var result bool
+	if system == nil {
+
+		system = initSystem(console)
+		CollectUpdates(console, system)
+
+	}
 
 	console.Group("actions/UpdatePackages")
 
+	remaining := make([]structs.Update, 0)
 	updates := make([]structs.Update, 0)
 
 	for u := 0; u < len(system.Updates); u++ {
@@ -42,8 +49,8 @@ func UpdatePackages(console *structs.Console, system *structs.System, searches [
 
 	if len(updates) > 0 {
 
-		var updated []structs.Update
-		var err error = nil
+		updated := make([]structs.Update, 0)
+		err := error(nil)
 
 		if pacman.SUPPORTED == true {
 
@@ -87,8 +94,6 @@ func UpdatePackages(console *structs.Console, system *structs.System, searches [
 
 		if err == nil && len(updated) > 0 {
 
-			remaining := make([]structs.Update, 0)
-
 			for u1 := 0; u1 < len(updates); u1++ {
 
 				update := updates[u1]
@@ -111,9 +116,10 @@ func UpdatePackages(console *structs.Console, system *structs.System, searches [
 
 			system.SetUpdates(remaining)
 			console.Log("Updated " + strconv.Itoa(len(updated)) + "/" + strconv.Itoa(len(updates)) + " Packages")
-			result = true
 
 		} else if err != nil {
+
+			remaining = updates
 
 			console.Error("Update(): Failed")
 			console.Error(err.Error())
@@ -124,6 +130,6 @@ func UpdatePackages(console *structs.Console, system *structs.System, searches [
 
 	console.GroupEnd("actions/UpdatePackages")
 
-	return result
+	return remaining
 
 }

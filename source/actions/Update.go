@@ -3,12 +3,18 @@ package actions
 import "tholian-core/matchers"
 import "tholian-core/structs"
 
-func Update(console *structs.Console, system *structs.System) bool {
+// Update returns the remaining available updates
+func Update(console *structs.Console, system *structs.System) []structs.Update {
+
+	if system == nil {
+		system = initSystem(console)
+	}
 
 	console.Group("actions/Update")
 
 	CollectUpdates(console, system)
 
+	remaining := make([]structs.Update, 0)
 	searches := make([]matchers.Package, 0)
 
 	for u := 0; u < len(system.Updates); u++ {
@@ -25,15 +31,14 @@ func Update(console *structs.Console, system *structs.System) bool {
 
 	}
 
-	result := UpdatePackages(console, system, searches)
+	residual := UpdatePackages(console, system, searches)
 
-	if result == true {
-		CollectPackages(console, system)
-		CollectUpdates(console, system)
+	if len(residual) > 0 {
+		remaining = residual
 	}
 
 	console.GroupEnd("actions/Update")
 
-	return result
+	return remaining
 
 }
