@@ -7,9 +7,15 @@ import "strconv"
 
 func SearchUsers(console *structs.Console, system *structs.System, search matchers.User) []types.User {
 
+	if system == nil {
+		system = initSystem(console)
+	}
+
+	CollectUsers(console, system)
+
 	console.Group("actions/SearchUsers")
 
-	var filtered []types.User
+	filtered := make([]types.User, 0)
 
 	for u := 0; u < len(system.Users); u++ {
 

@@ -7,9 +7,11 @@ import "tholian-scout/adapters/users/shadow"
 import "tholian-scout/adapters/users/systemd"
 import "strconv"
 
-func CollectUsers(console *structs.Console, system *structs.System) bool {
+func CollectUsers(console *structs.Console, system *structs.System) []types.User {
 
-	var result bool
+	if system == nil {
+		system = initSystem(console)
+	}
 
 	console.Group("actions/CollectUsers")
 
@@ -125,15 +127,12 @@ func CollectUsers(console *structs.Console, system *structs.System) bool {
 	}
 
 	if len(collected) > 0 {
-
 		system.SetUsers(collected)
-		result = true
-
 	}
 
 	console.Log("Collected " + strconv.Itoa(len(system.Users)) + "/" + strconv.Itoa(len(collected)) + " Users")
 	console.GroupEnd("actions/CollectUsers")
 
-	return result
+	return collected
 
 }

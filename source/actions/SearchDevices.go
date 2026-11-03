@@ -6,9 +6,15 @@ import "strconv"
 
 func SearchDevices(console *structs.Console, system *structs.System, search matchers.Device) []structs.Device {
 
+	if system == nil {
+		system = initSystem(console)
+	}
+
+	CollectDevices(console, system)
+
 	console.Group("actions/SearchDevices")
 
-	var filtered []structs.Device
+	filtered := make([]structs.Device, 0)
 
 	for d := 0; d < len(system.Devices); d++ {
 

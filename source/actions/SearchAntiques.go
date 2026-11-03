@@ -6,9 +6,18 @@ import "strconv"
 
 func SearchAntiques(console *structs.Console, system *structs.System, search matchers.Antique) []structs.Antique {
 
+	if system == nil {
+		system = initSystem(console)
+	}
+
+	CollectServices(console, system)
+	CollectPackages(console, system)
+	CollectUpdates(console, system)
+	CollectAntiques(console, system)
+
 	console.Group("actions/SearchAntiques")
 
-	var filtered []structs.Antique
+	filtered := make([]structs.Antique, 0)
 
 	for a := 0; a < len(system.Antiques); a++ {
 

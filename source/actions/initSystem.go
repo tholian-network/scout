@@ -10,7 +10,7 @@ import "tholian-scout/adapters/system/kldstat"
 import "tholian-scout/adapters/system/proc"
 import "tholian-scout/adapters/system/sys"
 
-func Init(console *structs.Console) *structs.System {
+func initSystem(console *structs.Console) *structs.System {
 
 	console.Group("actions/Init")
 

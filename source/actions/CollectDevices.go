@@ -6,9 +6,11 @@ import "tholian-scout/adapters/devices/sys"
 import "tholian-scout/adapters/devices/usbconfig"
 import "strconv"
 
-func CollectDevices(console *structs.Console, system *structs.System) bool {
+func CollectDevices(console *structs.Console, system *structs.System) []structs.Device {
 
-	var result bool
+	if system == nil {
+		system = initSystem(console)
+	}
 
 	console.Group("actions/CollectDevices")
 
@@ -92,12 +94,11 @@ func CollectDevices(console *structs.Console, system *structs.System) bool {
 
 	if len(collected) > 0 {
 		system.SetDevices(collected)
-		result = true
 	}
 
 	console.Log("Collected " + strconv.Itoa(len(system.Devices)) + "/" + strconv.Itoa(len(collected)) + " Devices")
 	console.GroupEnd("actions/CollectDevices")
 
-	return result
+	return collected
 
 }

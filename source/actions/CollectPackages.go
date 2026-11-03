@@ -13,9 +13,11 @@ import "tholian-scout/adapters/packages/tdnf"
 import "tholian-scout/adapters/packages/zypper"
 import "strconv"
 
-func CollectPackages(console *structs.Console, system *structs.System) bool {
+func CollectPackages(console *structs.Console, system *structs.System) []structs.Package {
 
-	var result bool
+	if system == nil {
+		system = initSystem(console)
+	}
 
 	console.Group("actions/CollectPackages")
 
@@ -44,7 +46,6 @@ func CollectPackages(console *structs.Console, system *structs.System) bool {
 		}
 
 		system.SetPackages(collected)
-		result = true
 
 	} else if apt.SUPPORTED == true {
 
@@ -69,7 +70,6 @@ func CollectPackages(console *structs.Console, system *structs.System) bool {
 		}
 
 		system.SetPackages(collected)
-		result = true
 
 	} else if apk.SUPPORTED == true {
 
@@ -94,7 +94,6 @@ func CollectPackages(console *structs.Console, system *structs.System) bool {
 		}
 
 		system.SetPackages(collected)
-		result = true
 
 	} else if dnf.SUPPORTED == true {
 
@@ -119,7 +118,6 @@ func CollectPackages(console *structs.Console, system *structs.System) bool {
 		}
 
 		system.SetPackages(collected)
-		result = true
 
 	} else if tdnf.SUPPORTED == true {
 
@@ -144,7 +142,6 @@ func CollectPackages(console *structs.Console, system *structs.System) bool {
 		}
 
 		system.SetPackages(collected)
-		result = true
 
 	} else if zypper.SUPPORTED == true {
 
@@ -169,7 +166,6 @@ func CollectPackages(console *structs.Console, system *structs.System) bool {
 		}
 
 		system.SetPackages(collected)
-		result = true
 
 	} else if dpkg.SUPPORTED == true {
 
@@ -194,7 +190,6 @@ func CollectPackages(console *structs.Console, system *structs.System) bool {
 		}
 
 		system.SetPackages(collected)
-		result = true
 
 	} else if rpm.SUPPORTED == true {
 
@@ -219,7 +214,6 @@ func CollectPackages(console *structs.Console, system *structs.System) bool {
 		}
 
 		system.SetPackages(collected)
-		result = true
 
 	} else if pkg.SUPPORTED == true {
 
@@ -244,7 +238,6 @@ func CollectPackages(console *structs.Console, system *structs.System) bool {
 		}
 
 		system.SetPackages(collected)
-		result = true
 
 	} else if opkg.SUPPORTED == true {
 
@@ -269,7 +262,6 @@ func CollectPackages(console *structs.Console, system *structs.System) bool {
 		}
 
 		system.SetPackages(collected)
-		result = true
 
 	} else {
 
@@ -280,6 +272,6 @@ func CollectPackages(console *structs.Console, system *structs.System) bool {
 	console.Log("Collected " + strconv.Itoa(len(system.Packages)) + "/" + strconv.Itoa(len(collected)) + " Packages")
 	console.GroupEnd("actions/CollectPackages")
 
-	return result
+	return collected
 
 }

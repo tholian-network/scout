@@ -11,9 +11,11 @@ import "tholian-scout/adapters/packages/tdnf"
 import "tholian-scout/adapters/packages/zypper"
 import "strconv"
 
-func CollectUpdates(console *structs.Console, system *structs.System) bool {
+func CollectUpdates(console *structs.Console, system *structs.System) []structs.Update {
 
-	var result bool
+	if system == nil {
+		system = initSystem(console)
+	}
 
 	console.Group("actions/CollectUpdates")
 
@@ -46,7 +48,6 @@ func CollectUpdates(console *structs.Console, system *structs.System) bool {
 		}
 
 		system.SetUpdates(collected)
-		result = true
 
 	} else if apt.SUPPORTED == true {
 
@@ -75,7 +76,6 @@ func CollectUpdates(console *structs.Console, system *structs.System) bool {
 		}
 
 		system.SetUpdates(collected)
-		result = true
 
 	} else if apk.SUPPORTED == true {
 
@@ -102,7 +102,6 @@ func CollectUpdates(console *structs.Console, system *structs.System) bool {
 		}
 
 		system.SetUpdates(collected)
-		result = true
 
 	} else if dnf.SUPPORTED == true {
 
@@ -135,7 +134,6 @@ func CollectUpdates(console *structs.Console, system *structs.System) bool {
 		}
 
 		system.SetUpdates(collected)
-		result = true
 
 	} else if tdnf.SUPPORTED == true {
 
@@ -163,7 +161,6 @@ func CollectUpdates(console *structs.Console, system *structs.System) bool {
 		}
 
 		system.SetUpdates(collected)
-		result = true
 
 	} else if zypper.SUPPORTED == true {
 
@@ -192,7 +189,6 @@ func CollectUpdates(console *structs.Console, system *structs.System) bool {
 		}
 
 		system.SetUpdates(collected)
-		result = true
 
 	} else if pkg.SUPPORTED == true {
 
@@ -219,7 +215,6 @@ func CollectUpdates(console *structs.Console, system *structs.System) bool {
 		}
 
 		system.SetUpdates(collected)
-		result = true
 
 	} else if opkg.SUPPORTED == true {
 
@@ -246,7 +241,6 @@ func CollectUpdates(console *structs.Console, system *structs.System) bool {
 		}
 
 		system.SetUpdates(collected)
-		result = true
 
 	} else {
 
@@ -259,6 +253,6 @@ func CollectUpdates(console *structs.Console, system *structs.System) bool {
 	console.Log("Collected " + strconv.Itoa(len(system.Updates)) + "/" + strconv.Itoa(len(collected)) + " Updates")
 	console.GroupEnd("actions/CollectUpdates")
 
-	return result
+	return collected
 
 }

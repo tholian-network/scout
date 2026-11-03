@@ -6,9 +6,15 @@ import "strconv"
 
 func SearchUpdates(console *structs.Console, system *structs.System, search matchers.Update) []structs.Update {
 
+	if system == nil {
+		system = initSystem(console)
+	}
+
+	CollectUpdates(console, system)
+
 	console.Group("actions/SearchUpdates")
 
-	var filtered []structs.Update
+	filtered := make([]structs.Update, 0)
 
 	for u := 0; u < len(system.Updates); u++ {
 

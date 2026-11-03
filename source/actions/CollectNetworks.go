@@ -4,9 +4,11 @@ import "tholian-core/structs"
 import "net"
 import "strconv"
 
-func CollectNetworks(console *structs.Console, system *structs.System) bool {
+func CollectNetworks(console *structs.Console, system *structs.System) []structs.Network {
 
-	var result bool
+	if system == nil {
+		system = initSystem(console)
+	}
 
 	console.Group("actions/CollectNetworks")
 
@@ -63,13 +65,12 @@ func CollectNetworks(console *structs.Console, system *structs.System) bool {
 		}
 
 		system.SetNetworks(collected)
-		result = true
 
 	}
 
 	console.Log("Collected " + strconv.Itoa(len(system.Networks)) + "/" + strconv.Itoa(len(collected)) + " Networks")
 	console.GroupEnd("actions/CollectNetworks")
 
-	return result
+	return collected
 
 }

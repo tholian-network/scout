@@ -8,9 +8,11 @@ import "tholian-scout/adapters/incidents/systemd"
 import utils_incidents "tholian-scout/internal/utils/incidents"
 import "strconv"
 
-func CollectIncidents(console *structs.Console, system *structs.System) bool {
+func CollectIncidents(console *structs.Console, system *structs.System) []structs.Incident {
 
-	var result bool
+	if system == nil {
+		system = initSystem(console)
+	}
 
 	console.Group("actions/CollectIncidents")
 
@@ -45,8 +47,6 @@ func CollectIncidents(console *structs.Console, system *structs.System) bool {
 			console.Warn("procstat.CollectIncidents(): Found 0 Incidents")
 
 		}
-
-		result = true
 
 	} else {
 
@@ -83,8 +83,6 @@ func CollectIncidents(console *structs.Console, system *structs.System) bool {
 
 		}
 
-		result = true
-
 	} else {
 
 		console.Warn("proc.CollectIncidents(): Unsupported")
@@ -119,8 +117,6 @@ func CollectIncidents(console *structs.Console, system *structs.System) bool {
 			console.Warn("systemd.CollectIncidents(): Found 0 Incidents")
 
 		}
-
-		result = true
 
 	} else {
 
@@ -157,8 +153,6 @@ func CollectIncidents(console *structs.Console, system *structs.System) bool {
 
 		}
 
-		result = true
-
 	} else {
 
 		console.Warn("syslog.CollectIncidents(): Unsupported")
@@ -170,6 +164,6 @@ func CollectIncidents(console *structs.Console, system *structs.System) bool {
 	console.Log("Collected " + strconv.Itoa(len(system.Incidents)) + "/" + strconv.Itoa(len(collected)) + " Incidents")
 	console.GroupEnd("actions/CollectIncidents")
 
-	return result
+	return collected
 
 }

@@ -2,7 +2,11 @@ package actions
 
 import "tholian-core/structs"
 
-func Collect(console *structs.Console, system *structs.System) bool {
+func Collect(console *structs.Console, system *structs.System) structs.System {
+
+	if system == nil {
+		system = initSystem(console)
+	}
 
 	console.Group("actions/Collect")
 
@@ -24,6 +28,6 @@ func Collect(console *structs.Console, system *structs.System) bool {
 
 	console.GroupEnd("actions/Collect")
 
-	return true
+	return *system
 
 }

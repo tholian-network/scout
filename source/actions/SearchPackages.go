@@ -6,9 +6,15 @@ import "strconv"
 
 func SearchPackages(console *structs.Console, system *structs.System, search matchers.Package) []structs.Package {
 
+	if system == nil {
+		system = initSystem(console)
+	}
+
+	CollectPackages(console, system)
+
 	console.Group("actions/SearchPackages")
 
-	var filtered []structs.Package
+	filtered := make([]structs.Package, 0)
 
 	for p := 0; p < len(system.Packages); p++ {
 

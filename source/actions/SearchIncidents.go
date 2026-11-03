@@ -6,9 +6,15 @@ import "strconv"
 
 func SearchIncidents(console *structs.Console, system *structs.System, search matchers.Incident) []structs.Incident {
 
+	if system == nil {
+		system = initSystem(console)
+	}
+
+	CollectIncidents(console, system)
+
 	console.Group("actions/SearchIncidents")
 
-	var filtered []structs.Incident
+	filtered := make([]structs.Incident, 0)
 
 	if search.MatchesSystem(system.Name) {
 

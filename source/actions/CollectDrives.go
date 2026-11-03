@@ -4,9 +4,11 @@ import "tholian-core/structs"
 import "tholian-scout/adapters/drives/df"
 import "strconv"
 
-func CollectDrives(console *structs.Console, system *structs.System) bool {
+func CollectDrives(console *structs.Console, system *structs.System) []structs.Drive {
 
-	var result bool
+	if system == nil {
+		system = initSystem(console)
+	}
 
 	console.Group("actions/CollectDrives")
 
@@ -35,7 +37,6 @@ func CollectDrives(console *structs.Console, system *structs.System) bool {
 		}
 
 		system.SetDrives(collected)
-		result = true
 
 	} else {
 
@@ -46,6 +47,6 @@ func CollectDrives(console *structs.Console, system *structs.System) bool {
 	console.Log("Collected " + strconv.Itoa(len(system.Drives)) + "/" + strconv.Itoa(len(collected)) + " Drives")
 	console.GroupEnd("actions/CollectDrives")
 
-	return result
+	return collected
 
 }

@@ -7,9 +7,11 @@ import "tholian-scout/adapters/programs/proc"
 import "tholian-scout/adapters/programs/procstat"
 import "strconv"
 
-func CollectPrograms(console *structs.Console, system *structs.System) bool {
+func CollectPrograms(console *structs.Console, system *structs.System) []structs.Program {
 
-	var result bool
+	if system == nil {
+		system = initSystem(console)
+	}
 
 	console.Group("actions/CollectPrograms")
 
@@ -49,7 +51,6 @@ func CollectPrograms(console *structs.Console, system *structs.System) bool {
 		}
 
 		system.SetPrograms(collected)
-		result = true
 
 	} else if proc.SUPPORTED == true {
 
@@ -85,7 +86,6 @@ func CollectPrograms(console *structs.Console, system *structs.System) bool {
 		}
 
 		system.SetPrograms(collected)
-		result = true
 
 	} else {
 
@@ -96,6 +96,6 @@ func CollectPrograms(console *structs.Console, system *structs.System) bool {
 	console.Log("Collected " + strconv.Itoa(len(system.Programs)) + "/" + strconv.Itoa(len(collected)) + " Programs")
 	console.GroupEnd("actions/CollectPrograms")
 
-	return result
+	return collected
 
 }

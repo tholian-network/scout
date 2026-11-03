@@ -3,7 +3,11 @@ package actions
 import "tholian-core/structs"
 import "strconv"
 
-func CollectAntiques(console *structs.Console, system *structs.System) bool {
+func CollectAntiques(console *structs.Console, system *structs.System) []structs.Antique {
+
+	if system == nil {
+		system = initSystem(console)
+	}
 
 	console.Group("actions/CollectAntiques")
 
@@ -72,6 +76,6 @@ func CollectAntiques(console *structs.Console, system *structs.System) bool {
 	console.Log("Collected " + strconv.Itoa(len(system.Antiques)) + "/" + strconv.Itoa(len(collected)) + " Antiques")
 	console.GroupEnd("actions/CollectAntiques")
 
-	return true
+	return collected
 
 }

@@ -10,13 +10,15 @@ import "tholian-scout/adapters/incidents/syslog"
 import "tholian-scout/adapters/incidents/systemd"
 import "strconv"
 
-func CollectIncidentsSince(console *structs.Console, system *structs.System, search matchers.Datetime) bool {
+func CollectIncidentsSince(console *structs.Console, system *structs.System, search matchers.Datetime) []structs.Incident {
 
-	var result bool
+	if system == nil {
+		system = initSystem(console)
+	}
 
 	console.Group("actions/CollectIncidentsSince")
 
-	collected := 0
+	collected := make([]structs.Incident, 0)
 
 	var from *types.Datetime = nil
 	var until *types.Datetime = nil
@@ -90,7 +92,7 @@ func CollectIncidentsSince(console *structs.Console, system *structs.System, sea
 						if seen[identity] == false {
 							system.AddIncident(incident)
 							seen[identity] = true
-							collected += 1
+							collected = append(collected, incident)
 						}
 
 					}
@@ -102,8 +104,6 @@ func CollectIncidentsSince(console *structs.Console, system *structs.System, sea
 				console.Warn("procstat.CollectIncidentsSince(): Found 0 Incidents since " + from.String())
 
 			}
-
-			result = true
 
 		} else {
 
@@ -128,7 +128,7 @@ func CollectIncidentsSince(console *structs.Console, system *structs.System, sea
 						if seen[identity] == false {
 							system.AddIncident(incident)
 							seen[identity] = true
-							collected += 1
+							collected = append(collected, incident)
 						}
 
 					}
@@ -140,8 +140,6 @@ func CollectIncidentsSince(console *structs.Console, system *structs.System, sea
 				console.Warn("proc.CollectIncidentsSince(): Found 0 Incidents since " + from.String())
 
 			}
-
-			result = true
 
 		} else {
 
@@ -166,7 +164,7 @@ func CollectIncidentsSince(console *structs.Console, system *structs.System, sea
 						if seen[identity] == false {
 							system.AddIncident(incident)
 							seen[identity] = true
-							collected += 1
+							collected = append(collected, incident)
 						}
 
 					}
@@ -178,8 +176,6 @@ func CollectIncidentsSince(console *structs.Console, system *structs.System, sea
 				console.Warn("systemd.CollectIncidentsSince(): Found 0 Incidents since " + from.String())
 
 			}
-
-			result = true
 
 		} else {
 
@@ -204,7 +200,7 @@ func CollectIncidentsSince(console *structs.Console, system *structs.System, sea
 						if seen[identity] == false {
 							system.AddIncident(incident)
 							seen[identity] = true
-							collected += 1
+							collected = append(collected, incident)
 						}
 
 					}
@@ -217,8 +213,6 @@ func CollectIncidentsSince(console *structs.Console, system *structs.System, sea
 
 			}
 
-			result = true
-
 		} else {
 
 			console.Warn("syslog.CollectIncidentsSince(): Unsupported")
@@ -227,9 +221,9 @@ func CollectIncidentsSince(console *structs.Console, system *structs.System, sea
 
 	}
 
-	console.Log("Collected " + strconv.Itoa(len(system.Incidents)) + "/" + strconv.Itoa(collected) + " Incidents")
+	console.Log("Collected " + strconv.Itoa(len(system.Incidents)) + "/" + strconv.Itoa(len(collected)) + " Incidents")
 	console.GroupEnd("actions/CollectIncidents")
 
-	return result
+	return collected
 
 }

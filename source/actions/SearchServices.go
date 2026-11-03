@@ -6,9 +6,17 @@ import "strconv"
 
 func SearchServices(console *structs.Console, system *structs.System, search matchers.Program) []structs.Program {
 
+	if system == nil {
+		system = initSystem(console)
+	}
+
+	CollectPrograms(console, system)
+	CollectPackages(console, system)
+	CollectUsers(console, system)
+
 	console.Group("actions/SearchServices")
 
-	var filtered []structs.Program
+	filtered := make([]structs.Program, 0)
 
 	for s := 0; s < len(system.Services); s++ {
 

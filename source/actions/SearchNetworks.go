@@ -6,9 +6,15 @@ import "strconv"
 
 func SearchNetworks(console *structs.Console, system *structs.System, search matchers.Network) []structs.Network {
 
+	if system == nil {
+		system = initSystem(console)
+	}
+
+	CollectNetworks(console, system)
+
 	console.Group("actions/SearchNetworks")
 
-	var filtered []structs.Network
+	filtered := make([]structs.Network, 0)
 
 	for n := 0; n < len(system.Networks); n++ {
 

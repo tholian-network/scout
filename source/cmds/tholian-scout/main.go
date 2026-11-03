@@ -11,7 +11,6 @@ import "path"
 import "strings"
 
 var CONSOLE *structs.Console
-var SYSTEM *structs.System = nil
 
 func showUsage(console *structs.Console) {
 
@@ -53,7 +52,6 @@ func showUsage(console *structs.Console) {
 
 func init() {
 	CONSOLE = structs.NewConsole(os.Stdout, os.Stderr, 0)
-	SYSTEM = actions.Init(CONSOLE)
 }
 
 func isSearchType(value string) bool {
@@ -183,7 +181,7 @@ func main() {
 
 		if action == "install" {
 
-			result := actions.Install(CONSOLE, SYSTEM)
+			result := actions.Install(CONSOLE, nil)
 
 			if result == true {
 				os.Exit(0)
@@ -193,7 +191,7 @@ func main() {
 
 		} else if action == "uninstall" {
 
-			result := actions.Uninstall(CONSOLE, SYSTEM)
+			result := actions.Uninstall(CONSOLE, nil)
 
 			if result == true {
 				os.Exit(0)
@@ -203,54 +201,42 @@ func main() {
 
 		} else if action == "collect" {
 
-			result := actions.Collect(CONSOLE, SYSTEM)
+			result := actions.Collect(CONSOLE, nil)
+			report := os.Getenv("THOLIAN_REPORT")
 
-			if result == true {
+			if report != "" {
 
-				report := os.Getenv("THOLIAN_REPORT")
+				data, err0 := json.MarshalIndent(result, "", "\t")
 
-				if report != "" {
+				if err0 == nil {
 
-					data, err0 := json.MarshalIndent(SYSTEM, "", "\t")
+					err1 := os.WriteFile(report, data, 0644)
 
-					if err0 == nil {
-
-						err1 := os.WriteFile(report, data, 0644)
-
-						if err1 == nil {
-							console.Info(fmt.Sprintf("Report written to %s", report))
-							os.Exit(0)
-						} else {
-							console.Error(err1.Error())
-							os.Exit(1)
-						}
-
+					if err1 == nil {
+						console.Info(fmt.Sprintf("Report written to %s", report))
+						os.Exit(0)
 					} else {
-						console.Error(err0.Error())
+						console.Error(err1.Error())
 						os.Exit(1)
 					}
 
 				} else {
-
-					console.Inspect(SYSTEM)
-					os.Exit(0)
-
+					console.Error(err0.Error())
+					os.Exit(1)
 				}
 
 			} else {
-				os.Exit(1)
+
+				console.Inspect(result)
+				os.Exit(0)
+
 			}
 
 		} else if action == "search" && search_type != "" && search_data != "" {
 
 			if search_type == "antiques" {
 
-				actions.CollectServices(CONSOLE, SYSTEM)
-				actions.CollectPackages(CONSOLE, SYSTEM)
-				actions.CollectUpdates(CONSOLE, SYSTEM)
-				actions.CollectAntiques(CONSOLE, SYSTEM)
-
-				results := actions.SearchAntiques(CONSOLE, SYSTEM, matchers.ToAntique(search_data))
+				results := actions.SearchAntiques(CONSOLE, nil, matchers.ToAntique(search_data))
 
 				if len(results) > 0 {
 
@@ -266,9 +252,7 @@ func main() {
 
 			} else if search_type == "devices" {
 
-				actions.CollectDevices(CONSOLE, SYSTEM)
-
-				results := actions.SearchDevices(CONSOLE, SYSTEM, matchers.ToDevice(search_data))
+				results := actions.SearchDevices(CONSOLE, nil, matchers.ToDevice(search_data))
 
 				if len(results) > 0 {
 
@@ -284,9 +268,7 @@ func main() {
 
 			} else if search_type == "drives" {
 
-				actions.CollectDrives(CONSOLE, SYSTEM)
-
-				results := actions.SearchDrives(CONSOLE, SYSTEM, matchers.ToDrive(search_data))
+				results := actions.SearchDrives(CONSOLE, nil, matchers.ToDrive(search_data))
 
 				if len(results) > 0 {
 
@@ -302,9 +284,7 @@ func main() {
 
 			} else if search_type == "incidents" {
 
-				actions.CollectIncidents(CONSOLE, SYSTEM)
-
-				results := actions.SearchIncidents(CONSOLE, SYSTEM, matchers.ToIncident(search_data))
+				results := actions.SearchIncidents(CONSOLE, nil, matchers.ToIncident(search_data))
 
 				if len(results) > 0 {
 
@@ -320,9 +300,7 @@ func main() {
 
 			} else if search_type == "networks" {
 
-				actions.CollectNetworks(CONSOLE, SYSTEM)
-
-				results := actions.SearchNetworks(CONSOLE, SYSTEM, matchers.ToNetwork(search_data))
+				results := actions.SearchNetworks(CONSOLE, nil, matchers.ToNetwork(search_data))
 
 				if len(results) > 0 {
 
@@ -338,9 +316,7 @@ func main() {
 
 			} else if search_type == "packages" {
 
-				actions.CollectPackages(CONSOLE, SYSTEM)
-
-				results := actions.SearchPackages(CONSOLE, SYSTEM, matchers.ToPackage(search_data))
+				results := actions.SearchPackages(CONSOLE, nil, matchers.ToPackage(search_data))
 
 				if len(results) > 0 {
 
@@ -356,9 +332,7 @@ func main() {
 
 			} else if search_type == "programs" {
 
-				actions.CollectPrograms(CONSOLE, SYSTEM)
-
-				results := actions.SearchPrograms(CONSOLE, SYSTEM, matchers.ToProgram(search_data))
+				results := actions.SearchPrograms(CONSOLE, nil, matchers.ToProgram(search_data))
 
 				if len(results) > 0 {
 
@@ -374,11 +348,7 @@ func main() {
 
 			} else if search_type == "services" {
 
-				actions.CollectPrograms(CONSOLE, SYSTEM)
-				actions.CollectPackages(CONSOLE, SYSTEM)
-				actions.CollectUsers(CONSOLE, SYSTEM)
-
-				results := actions.SearchServices(CONSOLE, SYSTEM, matchers.ToProgram(search_data))
+				results := actions.SearchServices(CONSOLE, nil, matchers.ToProgram(search_data))
 
 				if len(results) > 0 {
 
@@ -394,9 +364,7 @@ func main() {
 
 			} else if search_type == "updates" {
 
-				actions.CollectUpdates(CONSOLE, SYSTEM)
-
-				results := actions.SearchUpdates(CONSOLE, SYSTEM, matchers.ToUpdate(search_data))
+				results := actions.SearchUpdates(CONSOLE, nil, matchers.ToUpdate(search_data))
 
 				if len(results) > 0 {
 
@@ -412,9 +380,7 @@ func main() {
 
 			} else if search_type == "users" {
 
-				actions.CollectUsers(CONSOLE, SYSTEM)
-
-				results := actions.SearchUsers(CONSOLE, SYSTEM, matchers.ToUser(search_data))
+				results := actions.SearchUsers(CONSOLE, nil, matchers.ToUser(search_data))
 
 				if len(results) > 0 {
 

@@ -6,9 +6,15 @@ import "strconv"
 
 func SearchDrives(console *structs.Console, system *structs.System, search matchers.Drive) []structs.Drive {
 
+	if system == nil {
+		system = initSystem(console)
+	}
+
+	CollectDrives(console, system)
+
 	console.Group("actions/SearchDrives")
 
-	var filtered []structs.Drive
+	filtered := make([]structs.Drive, 0)
 
 	for d := 0; d < len(system.Drives); d++ {
 
