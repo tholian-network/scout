@@ -1,9 +1,9 @@
 package actions
 
 import "tholian-core/structs"
-import "tholian-scout/adapters/devices/pciconf"
-import "tholian-scout/adapters/devices/sys"
-import "tholian-scout/adapters/devices/usbconfig"
+import "tholian-scout/internal/adapters/devices/pciconf"
+import "tholian-scout/internal/adapters/devices/sys"
+import "tholian-scout/internal/adapters/devices/usbconfig"
 import "strconv"
 
 func CollectDevices(console *structs.Console, system *structs.System) []structs.Device {

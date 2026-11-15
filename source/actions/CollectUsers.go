@@ -2,9 +2,9 @@ package actions
 
 import "tholian-core/types"
 import "tholian-core/structs"
-import "tholian-scout/adapters/users/bsdshadow"
-import "tholian-scout/adapters/users/shadow"
-import "tholian-scout/adapters/users/systemd"
+import "tholian-scout/internal/adapters/users/bsdshadow"
+import "tholian-scout/internal/adapters/users/shadow"
+import "tholian-scout/internal/adapters/users/systemd"
 import "strconv"
 
 func CollectUsers(console *structs.Console, system *structs.System) []types.User {

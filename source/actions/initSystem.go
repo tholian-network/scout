@@ -3,12 +3,12 @@ package actions
 import "tholian-insights/countries"
 import "tholian-core/matchers"
 import "tholian-core/structs"
-import "tholian-scout/adapters/system/coreutils"
-import "tholian-scout/adapters/system/etc"
-import "tholian-scout/adapters/system/kenv"
-import "tholian-scout/adapters/system/kldstat"
-import "tholian-scout/adapters/system/proc"
-import "tholian-scout/adapters/system/sys"
+import "tholian-scout/internal/adapters/system/coreutils"
+import "tholian-scout/internal/adapters/system/etc"
+import "tholian-scout/internal/adapters/system/kenv"
+import "tholian-scout/internal/adapters/system/kldstat"
+import "tholian-scout/internal/adapters/system/proc"
+import "tholian-scout/internal/adapters/system/sys"
 
 func initSystem(console *structs.Console) *structs.System {
 

@@ -1,16 +1,16 @@
 package actions
 
 import "tholian-core/structs"
-import "tholian-scout/adapters/packages/apk"
-import "tholian-scout/adapters/packages/apt"
-import "tholian-scout/adapters/packages/dnf"
-import "tholian-scout/adapters/packages/dpkg"
-import "tholian-scout/adapters/packages/opkg"
-import "tholian-scout/adapters/packages/pkg"
-import "tholian-scout/adapters/packages/pacman"
-import "tholian-scout/adapters/packages/rpm"
-import "tholian-scout/adapters/packages/tdnf"
-import "tholian-scout/adapters/packages/zypper"
+import "tholian-scout/internal/adapters/packages/apk"
+import "tholian-scout/internal/adapters/packages/apt"
+import "tholian-scout/internal/adapters/packages/dnf"
+import "tholian-scout/internal/adapters/packages/dpkg"
+import "tholian-scout/internal/adapters/packages/opkg"
+import "tholian-scout/internal/adapters/packages/pkg"
+import "tholian-scout/internal/adapters/packages/pacman"
+import "tholian-scout/internal/adapters/packages/rpm"
+import "tholian-scout/internal/adapters/packages/tdnf"
+import "tholian-scout/internal/adapters/packages/zypper"
 import "strconv"
 
 func CollectPackages(console *structs.Console, system *structs.System) []structs.Package {

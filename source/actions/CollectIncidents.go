@@ -1,10 +1,10 @@
 package actions
 
 import "tholian-core/structs"
-import "tholian-scout/adapters/incidents/proc"
-import "tholian-scout/adapters/incidents/procstat"
-import "tholian-scout/adapters/incidents/syslog"
-import "tholian-scout/adapters/incidents/systemd"
+import "tholian-scout/internal/adapters/incidents/proc"
+import "tholian-scout/internal/adapters/incidents/procstat"
+import "tholian-scout/internal/adapters/incidents/syslog"
+import "tholian-scout/internal/adapters/incidents/systemd"
 import utils_incidents "tholian-scout/internal/utils/incidents"
 import "strconv"
 

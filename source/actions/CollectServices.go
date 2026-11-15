@@ -1,9 +1,9 @@
 package actions
 
 import "tholian-core/structs"
-import "tholian-scout/adapters/programs/npm"
-import "tholian-scout/adapters/programs/proc"
-import "tholian-scout/adapters/programs/procstat"
+import "tholian-scout/internal/adapters/programs/npm"
+import "tholian-scout/internal/adapters/programs/proc"
+import "tholian-scout/internal/adapters/programs/procstat"
 import "strconv"
 
 func CollectServices(console *structs.Console, system *structs.System) []structs.Program {

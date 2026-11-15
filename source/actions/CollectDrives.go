@@ -1,7 +1,7 @@
 package actions
 
 import "tholian-core/structs"
-import "tholian-scout/adapters/drives/df"
+import "tholian-scout/internal/adapters/drives/df"
 import "strconv"
 
 func CollectDrives(console *structs.Console, system *structs.System) []structs.Drive {

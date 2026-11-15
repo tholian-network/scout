@@ -3,7 +3,7 @@ package main
 import "tholian-core/matchers"
 import "tholian-core/structs"
 import "tholian-scout/actions"
-import "tholian-scout/adapters/system/proc"
+import "tholian-scout/internal/adapters/system/proc"
 import "encoding/json"
 import "fmt"
 import "os"
