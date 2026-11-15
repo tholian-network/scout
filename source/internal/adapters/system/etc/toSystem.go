@@ -2,7 +2,7 @@ package etc
 
 import "tholian-insights/distributions"
 import "tholian-core/structs"
-import "tholian-scout/adapters/system/kenv"
+import "tholian-scout/internal/adapters/system/kenv"
 import "encoding/hex"
 import "math/rand"
 import "os"

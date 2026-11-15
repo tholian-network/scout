@@ -1,7 +1,7 @@
 package zypper
 
 import "tholian-core/structs"
-import "tholian-scout/adapters/packages/rpm"
+import "tholian-scout/internal/adapters/packages/rpm"
 import "os"
 import "os/exec"
 import "strings"

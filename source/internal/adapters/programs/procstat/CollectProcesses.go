@@ -2,7 +2,7 @@ package procstat
 
 import "tholian-core/matchers"
 import "tholian-core/structs"
-import "tholian-scout/adapters/users/bsdshadow"
+import "tholian-scout/internal/adapters/users/bsdshadow"
 import "os"
 import "os/exec"
 import "path"

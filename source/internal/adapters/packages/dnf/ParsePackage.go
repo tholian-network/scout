@@ -1,8 +1,9 @@
-package zypper
+package dnf
 
+import "tholian-scout/internal/adapters/packages/rpm"
 import "tholian-core/matchers"
 import "tholian-core/structs"
-import "tholian-scout/adapters/packages/rpm"
+import "strconv"
 import "strings"
 import "time"
 
@@ -22,14 +23,10 @@ func ParsePackage(buffer string, result *structs.Package) {
 			key = strings.TrimSpace(line[0:strings.Index(line, " : ")])
 			val = strings.TrimSpace(line[strings.Index(line, " : ")+3:])
 
-			if key == "Provides" || key == "Requires" || key == "Conflicts" || key == "Obsoletes" {
+		} else if strings.HasSuffix(line, " :") {
 
-				// Ignore counters for multi-line output
-				if strings.HasPrefix(val, "[") && strings.HasSuffix(val, "]") {
-					val = ""
-				}
-
-			}
+			key = strings.TrimSpace(line[0:strings.Index(line, " :")])
+			val = ""
 
 		} else {
 
@@ -37,18 +34,25 @@ func ParsePackage(buffer string, result *structs.Package) {
 
 		}
 
-		if key == "Arch" {
+		if key == "Architecture" {
 
-			if val != "" {
-				result.SetArchitecture(val)
+			result.SetArchitecture(val)
+
+		} else if key == "Buildtime" {
+
+			// Build Time as unix timestamp
+			number, err := strconv.ParseInt(val, 10, 64)
+
+			if err == nil {
+				result.SetDatetime(time.Unix(number, 0).Format(time.RFC3339))
 			}
 
 		} else if key == "Conflicts" {
 
-			if val != "" && val != "---" {
+			if val != "" {
 
 				conflict := matchers.NewPackage()
-				conflict.SetManager("zypper")
+				conflict.SetManager("dnf")
 
 				parse_result := rpm.ParseConflict(val, &conflict)
 
@@ -58,34 +62,36 @@ func ParsePackage(buffer string, result *structs.Package) {
 
 			}
 
+		} else if key == "Files" {
+
+			if val != "" {
+
+				if strings.HasPrefix(val, "/") {
+					result.AddFilesystem(val)
+				}
+
+			}
+
 		} else if key == "Name" {
 
-			if val != "" {
-				result.SetName(val)
-			}
-
-		} else if key == "Vendor" {
-
-			if val != "" {
-				result.SetVendor(strings.ToLower(val))
-			}
+			result.SetName(val)
 
 		} else if key == "Obsoletes" {
 
-			if val != "" && val != "---" {
+			if val != "" {
 
 				conflict := matchers.ToPackage(val)
-				conflict.SetManager("zypper")
+				conflict.SetManager("dnf")
 				result.AddConflict(conflict)
 
 			}
 
 		} else if key == "Provides" {
 
-			if val != "" && val != "---" {
+			if val != "" {
 
 				provide := matchers.NewPackage()
-				provide.SetManager("zypper")
+				provide.SetManager("dnf")
 
 				parse_result := rpm.ParseProvide(val, &provide)
 
@@ -97,10 +103,10 @@ func ParsePackage(buffer string, result *structs.Package) {
 
 		} else if key == "Requires" {
 
-			if val != "" && val != "---" {
+			if val != "" {
 
 				dependency := matchers.NewPackage()
-				dependency.SetManager("zypper")
+				dependency.SetManager("dnf")
 
 				parse_result := rpm.ParseRequire(val, &dependency)
 
@@ -110,28 +116,7 @@ func ParsePackage(buffer string, result *structs.Package) {
 
 			}
 
-		} else if key == "Status" {
-
-			if val != "" {
-
-				if val == "up-to-date" {
-
-					// Do Nothing, already uses correct package version
-
-				} else if strings.HasPrefix(val, "out-of-date (version ") && strings.HasSuffix(val, " installed)") {
-
-					// Set the correct _local_ package version
-					version := strings.TrimSpace(val[21 : len(val)-11])
-
-					if version != "" {
-						result.SetVersion(version)
-					}
-
-				}
-
-			}
-
-		} else if key == "Upstream URL" {
+		} else if key == "URL" {
 
 			if val != "" {
 				result.SetURL(val)
@@ -139,9 +124,7 @@ func ParsePackage(buffer string, result *structs.Package) {
 
 		} else if key == "Version" {
 
-			if val != "" {
-				result.SetVersion(val)
-			}
+			result.SetVersion(val)
 
 		}
 

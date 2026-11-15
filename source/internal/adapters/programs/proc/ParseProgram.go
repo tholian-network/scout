@@ -2,7 +2,7 @@ package proc
 
 import "tholian-core/matchers"
 import "tholian-core/structs"
-import "tholian-scout/adapters/users/shadow"
+import "tholian-scout/internal/adapters/users/shadow"
 import "os"
 import "strconv"
 import "strings"

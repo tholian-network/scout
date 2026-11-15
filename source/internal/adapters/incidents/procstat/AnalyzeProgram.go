@@ -2,8 +2,8 @@ package procstat
 
 import "tholian-core/matchers"
 import "tholian-core/structs"
-import "tholian-scout/adapters/incidents/proc"
-import programs "tholian-scout/adapters/programs/procstat"
+import "tholian-scout/internal/adapters/incidents/proc"
+import programs "tholian-scout/internal/adapters/programs/procstat"
 import utils_os "tholian-scout/internal/utils/os"
 import utils_strings "tholian-scout/internal/utils/strings"
 import "strings"

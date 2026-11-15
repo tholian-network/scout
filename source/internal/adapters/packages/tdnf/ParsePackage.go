@@ -1,9 +1,8 @@
-package dnf
+package tdnf
 
-import "tholian-scout/adapters/packages/rpm"
+import "tholian-scout/internal/adapters/packages/rpm"
 import "tholian-core/matchers"
 import "tholian-core/structs"
-import "strconv"
 import "strings"
 import "time"
 
@@ -13,6 +12,10 @@ func ParsePackage(buffer string, result *structs.Package) {
 
 	var key string
 	var val string
+
+	var epoch string
+	var version string
+	var release string
 
 	for l := 0; l < len(lines); l++ {
 
@@ -34,25 +37,20 @@ func ParsePackage(buffer string, result *structs.Package) {
 
 		}
 
-		if key == "Architecture" {
+		if key == "Arch" || key == "Architecture" {
 
 			result.SetArchitecture(val)
 
 		} else if key == "Buildtime" {
 
-			// Build Time as unix timestamp
-			number, err := strconv.ParseInt(val, 10, 64)
-
-			if err == nil {
-				result.SetDatetime(time.Unix(number, 0).Format(time.RFC3339))
-			}
+			result.SetDatetime(val)
 
 		} else if key == "Conflicts" {
 
 			if val != "" {
 
 				conflict := matchers.NewPackage()
-				conflict.SetManager("dnf")
+				conflict.SetManager("tdnf")
 
 				parse_result := rpm.ParseConflict(val, &conflict)
 
@@ -61,6 +59,10 @@ func ParsePackage(buffer string, result *structs.Package) {
 				}
 
 			}
+
+		} else if key == "Epoch" {
+
+			epoch = val
 
 		} else if key == "Files" {
 
@@ -81,7 +83,7 @@ func ParsePackage(buffer string, result *structs.Package) {
 			if val != "" {
 
 				conflict := matchers.ToPackage(val)
-				conflict.SetManager("dnf")
+				conflict.SetManager("tdnf")
 				result.AddConflict(conflict)
 
 			}
@@ -91,7 +93,7 @@ func ParsePackage(buffer string, result *structs.Package) {
 			if val != "" {
 
 				provide := matchers.NewPackage()
-				provide.SetManager("dnf")
+				provide.SetManager("tdnf")
 
 				parse_result := rpm.ParseProvide(val, &provide)
 
@@ -101,12 +103,16 @@ func ParsePackage(buffer string, result *structs.Package) {
 
 			}
 
+		} else if key == "Release" {
+
+			release = val
+
 		} else if key == "Requires" {
 
 			if val != "" {
 
 				dependency := matchers.NewPackage()
-				dependency.SetManager("dnf")
+				dependency.SetManager("tdnf")
 
 				parse_result := rpm.ParseRequire(val, &dependency)
 
@@ -124,7 +130,27 @@ func ParsePackage(buffer string, result *structs.Package) {
 
 		} else if key == "Version" {
 
-			result.SetVersion(val)
+			version = val
+
+		}
+
+	}
+
+	if version != "" {
+
+		if release != "" {
+
+			evr := version + "-" + release
+
+			if epoch != "" && epoch != "0" {
+				evr = epoch + ":" + evr
+			}
+
+			result.SetVersion(evr)
+
+		} else {
+
+			result.SetVersion(version)
 
 		}
 

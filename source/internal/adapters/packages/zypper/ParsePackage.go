@@ -1,8 +1,8 @@
-package tdnf
+package zypper
 
-import "tholian-scout/adapters/packages/rpm"
 import "tholian-core/matchers"
 import "tholian-core/structs"
+import "tholian-scout/internal/adapters/packages/rpm"
 import "strings"
 import "time"
 
@@ -13,10 +13,6 @@ func ParsePackage(buffer string, result *structs.Package) {
 	var key string
 	var val string
 
-	var epoch string
-	var version string
-	var release string
-
 	for l := 0; l < len(lines); l++ {
 
 		line := strings.TrimSpace(lines[l])
@@ -26,10 +22,14 @@ func ParsePackage(buffer string, result *structs.Package) {
 			key = strings.TrimSpace(line[0:strings.Index(line, " : ")])
 			val = strings.TrimSpace(line[strings.Index(line, " : ")+3:])
 
-		} else if strings.HasSuffix(line, " :") {
+			if key == "Provides" || key == "Requires" || key == "Conflicts" || key == "Obsoletes" {
 
-			key = strings.TrimSpace(line[0:strings.Index(line, " :")])
-			val = ""
+				// Ignore counters for multi-line output
+				if strings.HasPrefix(val, "[") && strings.HasSuffix(val, "]") {
+					val = ""
+				}
+
+			}
 
 		} else {
 
@@ -37,20 +37,18 @@ func ParsePackage(buffer string, result *structs.Package) {
 
 		}
 
-		if key == "Arch" || key == "Architecture" {
+		if key == "Arch" {
 
-			result.SetArchitecture(val)
-
-		} else if key == "Buildtime" {
-
-			result.SetDatetime(val)
+			if val != "" {
+				result.SetArchitecture(val)
+			}
 
 		} else if key == "Conflicts" {
 
-			if val != "" {
+			if val != "" && val != "---" {
 
 				conflict := matchers.NewPackage()
-				conflict.SetManager("tdnf")
+				conflict.SetManager("zypper")
 
 				parse_result := rpm.ParseConflict(val, &conflict)
 
@@ -60,40 +58,34 @@ func ParsePackage(buffer string, result *structs.Package) {
 
 			}
 
-		} else if key == "Epoch" {
-
-			epoch = val
-
-		} else if key == "Files" {
-
-			if val != "" {
-
-				if strings.HasPrefix(val, "/") {
-					result.AddFilesystem(val)
-				}
-
-			}
-
 		} else if key == "Name" {
 
-			result.SetName(val)
+			if val != "" {
+				result.SetName(val)
+			}
+
+		} else if key == "Vendor" {
+
+			if val != "" {
+				result.SetVendor(strings.ToLower(val))
+			}
 
 		} else if key == "Obsoletes" {
 
-			if val != "" {
+			if val != "" && val != "---" {
 
 				conflict := matchers.ToPackage(val)
-				conflict.SetManager("tdnf")
+				conflict.SetManager("zypper")
 				result.AddConflict(conflict)
 
 			}
 
 		} else if key == "Provides" {
 
-			if val != "" {
+			if val != "" && val != "---" {
 
 				provide := matchers.NewPackage()
-				provide.SetManager("tdnf")
+				provide.SetManager("zypper")
 
 				parse_result := rpm.ParseProvide(val, &provide)
 
@@ -103,16 +95,12 @@ func ParsePackage(buffer string, result *structs.Package) {
 
 			}
 
-		} else if key == "Release" {
-
-			release = val
-
 		} else if key == "Requires" {
 
-			if val != "" {
+			if val != "" && val != "---" {
 
 				dependency := matchers.NewPackage()
-				dependency.SetManager("tdnf")
+				dependency.SetManager("zypper")
 
 				parse_result := rpm.ParseRequire(val, &dependency)
 
@@ -122,7 +110,28 @@ func ParsePackage(buffer string, result *structs.Package) {
 
 			}
 
-		} else if key == "URL" {
+		} else if key == "Status" {
+
+			if val != "" {
+
+				if val == "up-to-date" {
+
+					// Do Nothing, already uses correct package version
+
+				} else if strings.HasPrefix(val, "out-of-date (version ") && strings.HasSuffix(val, " installed)") {
+
+					// Set the correct _local_ package version
+					version := strings.TrimSpace(val[21 : len(val)-11])
+
+					if version != "" {
+						result.SetVersion(version)
+					}
+
+				}
+
+			}
+
+		} else if key == "Upstream URL" {
 
 			if val != "" {
 				result.SetURL(val)
@@ -130,27 +139,9 @@ func ParsePackage(buffer string, result *structs.Package) {
 
 		} else if key == "Version" {
 
-			version = val
-
-		}
-
-	}
-
-	if version != "" {
-
-		if release != "" {
-
-			evr := version + "-" + release
-
-			if epoch != "" && epoch != "0" {
-				evr = epoch + ":" + evr
+			if val != "" {
+				result.SetVersion(val)
 			}
-
-			result.SetVersion(evr)
-
-		} else {
-
-			result.SetVersion(version)
 
 		}
 

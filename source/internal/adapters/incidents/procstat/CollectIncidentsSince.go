@@ -1,13 +1,14 @@
 package procstat
 
 import "tholian-core/structs"
+import "tholian-core/types"
 import utils_incidents "tholian-scout/internal/utils/incidents"
-import "tholian-scout/adapters/programs/procstat"
+import "tholian-scout/internal/adapters/programs/procstat"
 import "os"
 import "sort"
 import "time"
 
-func CollectIncidents(system string) []structs.Incident {
+func CollectIncidentsSince(system string, since types.Datetime) []structs.Incident {
 
 	var result []structs.Incident
 
@@ -33,23 +34,29 @@ func CollectIncidents(system string) []structs.Incident {
 				datetime = started
 			}
 
-			incidents := AnalyzeProgram(system, datetime, program, mappings[program.PID])
+			current := types.ToDatetime(datetime)
 
-			for i := 0; i < len(incidents); i++ {
+			if current.IsValid() && current.IsAfter(since) {
 
-				incident := incidents[i]
+				incidents := AnalyzeProgram(system, datetime, program, mappings[program.PID])
 
-				if incident.IsValid() == true {
+				for i := 0; i < len(incidents); i++ {
 
-					identity := incident.Hash()
+					incident := incidents[i]
 
-					if identity == "" {
-						identity = utils_incidents.ToIdentity(incident)
-					}
+					if incident.IsValid() == true {
 
-					if seen[identity] == false {
-						result = append(result, incident)
-						seen[identity] = true
+						identity := incident.Hash()
+
+						if identity == "" {
+							identity = utils_incidents.ToIdentity(incident)
+						}
+
+						if seen[identity] == false {
+							result = append(result, incident)
+							seen[identity] = true
+						}
+
 					}
 
 				}

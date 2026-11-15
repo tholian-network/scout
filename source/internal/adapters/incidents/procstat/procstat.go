@@ -1,6 +1,6 @@
 package procstat
 
-import programs_procstat "tholian-scout/adapters/programs/procstat"
+import programs_procstat "tholian-scout/internal/adapters/programs/procstat"
 
 var SUPPORTED bool = false
 

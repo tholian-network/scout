@@ -1,9 +1,9 @@
-package procstat
+package proc
 
 import "tholian-core/structs"
 import "tholian-core/types"
 import utils_incidents "tholian-scout/internal/utils/incidents"
-import "tholian-scout/adapters/programs/procstat"
+import "tholian-scout/internal/adapters/programs/proc"
 import "os"
 import "sort"
 import "time"
@@ -14,9 +14,7 @@ func CollectIncidentsSince(system string, since types.Datetime) []structs.Incide
 
 	if SUPPORTED == true {
 
-		processes := procstat.CollectProcesses()
-		starts := procstat.CollectProcessStartTimes()
-		mappings := procstat.CollectMappings()
+		processes := proc.CollectProcesses()
 		seen := make(map[string]bool)
 		self := uint(os.Getpid())
 
@@ -29,16 +27,17 @@ func CollectIncidentsSince(system string, since types.Datetime) []structs.Incide
 			}
 
 			datetime := time.Now().Format("2006-01-02 15:04:05")
+			started := getProcessStartedAt(program.PID)
 
-			if started, ok := starts[program.PID]; ok == true && started != "" {
-				datetime = started
+			if started != nil && started.IsValid() == true {
+				datetime = started.String()
 			}
 
 			current := types.ToDatetime(datetime)
 
 			if current.IsValid() && current.IsAfter(since) {
 
-				incidents := AnalyzeProgram(system, datetime, program, mappings[program.PID])
+				incidents := AnalyzeProgram(system, datetime, program)
 
 				for i := 0; i < len(incidents); i++ {
 
