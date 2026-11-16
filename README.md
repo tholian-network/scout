@@ -10,32 +10,32 @@ Scout detects distributions through `/etc/os-release` and collects inventory
 through platform-specific interfaces. The following distributions and package
 managers are supported:
 
-| Distribution             | Package Manager | Antiques | Packages | Devices | Drives | Incidents | Networks | Programs | Services | Updates | Users |
-|--------------------------|-----------------|----------|----------|---------|--------|-----------|----------|----------|----------|---------|-------|
-| AlmaLinux                | `dnf`           | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
-| Alpine Linux             | `apk`           | yes      | yes      | yes     | yes    | partial   | yes      | yes      | yes      | yes     | yes   |
-| Amazon Linux             | `dnf`           | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
-| Antergos                 | `pacman`        | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
-| Arch Linux               | `pacman`        | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
-| CBL-Mariner              | `tdnf`          | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
-| CentOS                   | `dnf`           | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
-| Debian                   | `apt`           | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
-| Fedora                   | `dnf`           | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
-| FreeBSD                  | `pkg`           | yes      | yes      | yes     | yes    | partial   | yes      | yes      | yes      | yes     | yes   |
-| Gentoo Linux             |                 |          |          |         |        |           |          |          |          |         |       |
-| Linux Mint               | `apt`           | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
-| Manjaro                  | `pacman`        | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
-| NetBSD                   |                 |          |          |         |        |           |          |          |          |         |       |
-| OpenBSD                  |                 |          |          |         |        |           |          |          |          |         |       |
-| openSUSE                 | `zypper`        | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
-| OpenWRT                  | `opkg`          | yes      | yes      | yes     | yes    | partial   | yes      | yes      | yes      | yes     | yes   |
-| Oracle Linux             | `dnf`           | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
-| Photon OS                | `tdnf`          | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
-| Red Hat Enterprise Linux | `dnf`           | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
-| Rocky Linux              | `dnf`           | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
-| SUSE Linux Enterprise    | `zypper`        | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
-| Trisquel                 | `apt`           | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
-| Ubuntu                   | `apt`           | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
+| Distribution  | Package Manager | Antiques | Packages | Devices | Drives | Incidents | Networks | Programs | Services | Updates | Users |
+|---------------|-----------------|----------|----------|---------|--------|-----------|----------|----------|----------|---------|-------|
+| `almalinux`   | `dnf`           | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
+| `alpinelinux` | `apk`           | yes      | yes      | yes     | yes    | partial   | yes      | yes      | yes      | yes     | yes   |
+| `amazonlinux` | `dnf`           | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
+| `antergos`    | `pacman`        | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
+| `archlinux`   | `pacman`        | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
+| `cblmariner`  | `tdnf`          | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
+| `centos`      | `dnf`           | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
+| `debian`      | `apt`           | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
+| `fedora`      | `dnf`           | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
+| `freebsd`     | `pkg`           | yes      | yes      | yes     | yes    | partial   | yes      | yes      | yes      | yes     | yes   |
+| `gentoolinux` |                 |          |          |         |        |           |          |          |          |         |       |
+| `linuxmint`   | `apt`           | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
+| `manjaro`     | `pacman`        | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
+| `netbsd`      |                 |          |          |         |        |           |          |          |          |         |       |
+| `openbsd`     |                 |          |          |         |        |           |          |          |          |         |       |
+| `opensuse`    | `zypper`        | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
+| `openwrt`     | `opkg`          | yes      | yes      | yes     | yes    | partial   | yes      | yes      | yes      | yes     | yes   |
+| `oraclelinux` | `dnf`           | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
+| `photonos`    | `tdnf`          | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
+| `redhat`      | `dnf`           | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
+| `rockylinux`  | `dnf`           | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
+| `suse`        | `zypper`        | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
+| `trisquel`    | `apt`           | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
+| `ubuntu`      | `apt`           | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
 
 `yes` means a collector is implemented for that datatype. `no` means it is not
 implemented. `partial` means incidents come from live process analysis and from
