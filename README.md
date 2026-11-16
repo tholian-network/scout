@@ -26,6 +26,7 @@ managers are supported:
 | Linux Mint               | `apt`           | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
 | Manjaro                  | `pacman`        | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
 | NetBSD                   |                 |          |          |         |        |           |          |          |          |         |       |
+| OpenBSD                  |                 |          |          |         |        |           |          |          |          |         |       |
 | openSUSE                 | `zypper`        | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
 | OpenWRT                  | `opkg`          | yes      | yes      | yes     | yes    | partial   | yes      | yes      | yes      | yes     | yes   |
 | Oracle Linux             | `dnf`           | yes      | yes      | yes     | yes    | yes       | yes      | yes      | yes      | yes     | yes   |
