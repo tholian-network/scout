@@ -1,6 +1,5 @@
 package npm
 
-import "tholian-core/matchers"
 import "tholian-core/structs"
 import "tholian-core/types"
 import "encoding/json"
@@ -138,23 +137,7 @@ func addPackageDependencies(result *structs.Package, dependencies map[string]str
 	sort.Strings(names)
 
 	for n := 0; n < len(names); n++ {
-
-		name := names[n]
-		version := strings.TrimSpace(dependencies[name])
-
-		if version == "" {
-			version = "*"
-		}
-
-		dependency := matchers.NewPackage()
-		dependency.SetName(name)
-		dependency.SetVersion(version)
-		dependency.SetArchitecture("any")
-		dependency.SetManager("npm")
-		dependency.SetVendor("npm")
-
-		result.AddDependency(dependency)
-
+		addDependency(result, names[n], dependencies[names[n]])
 	}
 
 }

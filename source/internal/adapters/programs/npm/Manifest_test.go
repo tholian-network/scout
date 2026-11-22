@@ -74,6 +74,12 @@ func TestManifestStandard(t *testing.T) {
 		t.Fatalf("Expected sorted dependencies, got %v", pkg.Dependencies)
 	}
 
+	if pkg.Dependencies[0].Version != ">= 2.0.0" ||
+		pkg.Dependencies[1].Version != ">= 1.3.0" ||
+		pkg.Dependencies[2].Version != "= 5.4.2" {
+		t.Fatalf("Expected normalized dependency versions, got %v", pkg.Dependencies)
+	}
+
 	if pkg.IsValid() == false {
 		t.Fatal("Expected parsed package to be valid")
 	}
@@ -133,6 +139,36 @@ func TestManifestHostileTypes(t *testing.T) {
 	}
 
 	pkg := manifest.ToPackage()
+
+	found := make(map[string]string)
+
+	for d := 0; d < len(pkg.Dependencies); d++ {
+		found[pkg.Dependencies[d].Name] = pkg.Dependencies[d].Version
+	}
+
+	if found["string-value"] != ">= 1.0.0" {
+		t.Fatalf("Expected string dependency >= 1.0.0, got %s", found["string-value"])
+	}
+
+	if found["number-value"] != ">= 2" {
+		t.Fatalf("Expected numeric dependency >= 2, got %s", found["number-value"])
+	}
+
+	if found["null-value"] != "any" {
+		t.Fatalf("Expected null dependency any, got %s", found["null-value"])
+	}
+
+	if found["object-value"] != "= 3.0.0" {
+		t.Fatalf("Expected object dependency = 3.0.0, got %s", found["object-value"])
+	}
+
+	if found["empty-value"] != "any" {
+		t.Fatalf("Expected empty dependency any, got %s", found["empty-value"])
+	}
+
+	if found["dev-value"] != ">= 4.0.0" {
+		t.Fatalf("Expected dev dependency >= 4.0.0, got %s", found["dev-value"])
+	}
 
 	if pkg.IsValid() == false {
 		t.Fatal("Expected hostile manifest package to remain valid")

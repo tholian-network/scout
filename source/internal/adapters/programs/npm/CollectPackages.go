@@ -87,6 +87,10 @@ func collectPackages(folder string) []structs.Package {
 
 	}
 
+	for c := 0; c < len(collected); c++ {
+		collected[c].ResolveDependencies(collected)
+	}
+
 	sort.Slice(collected, func(a int, b int) bool {
 
 		if collected[a].Name == collected[b].Name {
