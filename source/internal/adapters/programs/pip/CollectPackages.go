@@ -1,6 +1,5 @@
 package pip
 
-import "tholian-core/matchers"
 import "tholian-core/structs"
 import "tholian-core/types"
 import "os"
@@ -31,6 +30,10 @@ func collectPackages(folder string) []structs.Package {
 			collectSitePackages(&collected, site)
 		}
 
+	}
+
+	for c := 0; c < len(collected); c++ {
+		collected[c].ResolveDependencies(collected)
 	}
 
 	sort.Slice(collected, func(a int, b int) bool {
@@ -181,16 +184,7 @@ func parseMetadata(file string) structs.Package {
 			dependency_name, dependency_version := parseRequirement(requires[r])
 
 			if dependency_name != "" {
-
-				dependency := matchers.NewPackage()
-				dependency.SetName(dependency_name)
-				dependency.SetVersion(dependency_version)
-				dependency.SetArchitecture("any")
-				dependency.SetManager("pip")
-				dependency.SetVendor("pip")
-
-				result.AddDependency(dependency)
-
+				addDependency(&result, dependency_name, dependency_version)
 			}
 
 		}

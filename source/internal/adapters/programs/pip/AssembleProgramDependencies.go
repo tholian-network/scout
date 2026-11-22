@@ -10,9 +10,16 @@ func AssembleProgramDependencies(result *structs.Program) {
 		if isFile(result.Folder + "/requirements.txt") {
 
 			manifest := NewManifest(result.Folder + "/requirements.txt")
+			root := manifest.ToPackage()
 
-			for _, dependency := range manifest.ToPackage().Dependencies {
+			root.ResolveDependencies(result.Packages)
+
+			for _, dependency := range root.Dependencies {
 				result.AddDependency(dependency)
+			}
+
+			for _, unresolved := range root.Unresolved {
+				result.AddUnresolved(unresolved)
 			}
 
 		}

@@ -72,6 +72,16 @@ func TestManifestRequirements(t *testing.T) {
 		t.Fatalf("Expected sorted package dependencies, got %v", pkg.Dependencies)
 	}
 
+	if pkg.Dependencies[0].Version != ">= 3.0" ||
+		pkg.Dependencies[1].Version != "= 8.1.7" ||
+		pkg.Dependencies[2].Version != "= 5.0.2" ||
+		pkg.Dependencies[3].Version != "any" ||
+		pkg.Dependencies[4].Version != "any" ||
+		pkg.Dependencies[5].Version != "= 2.31.0" ||
+		pkg.Dependencies[6].Version != ">= 0.29.0" {
+		t.Fatalf("Expected normalized package dependency versions, got %v", pkg.Dependencies)
+	}
+
 }
 
 func TestManifestHostile(t *testing.T) {

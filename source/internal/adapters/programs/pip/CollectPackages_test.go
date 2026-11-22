@@ -28,6 +28,21 @@ func TestCollectPackages(t *testing.T) {
 		t.Fatalf("Expected 6 Flask dependencies, got %d", len(flask.Dependencies))
 	}
 
+	flask_deps := make(map[string]string)
+
+	for d := 0; d < len(flask.Dependencies); d++ {
+		flask_deps[flask.Dependencies[d].Name] = flask.Dependencies[d].Version
+	}
+
+	if flask_deps["Werkzeug"] != ">= 3.0.0" ||
+		flask_deps["Jinja2"] != ">= 3.1.2" ||
+		flask_deps["itsdangerous"] != ">= 2.1.2" ||
+		flask_deps["click"] != ">= 8.1.3" ||
+		flask_deps["blinker"] != ">= 1.6.2" ||
+		flask_deps["importlib-metadata"] != ">= 3.6.0" {
+		t.Fatalf("Expected normalized Flask dependencies, got %v", flask.Dependencies)
+	}
+
 	if len(flask.Maintainers) != 1 || flask.Maintainers[0].Name != "Pallets Team" {
 		t.Fatalf("Expected Pallets Team maintainer, got %v", flask.Maintainers)
 	}
@@ -38,6 +53,19 @@ func TestCollectPackages(t *testing.T) {
 
 	if len(requests.Dependencies) != 4 {
 		t.Fatalf("Expected 4 requests dependencies after skipping extras, got %d", len(requests.Dependencies))
+	}
+
+	requests_deps := make(map[string]string)
+
+	for d := 0; d < len(requests.Dependencies); d++ {
+		requests_deps[requests.Dependencies[d].Name] = requests.Dependencies[d].Version
+	}
+
+	if requests_deps["charset-normalizer"] != ">= 2" ||
+		requests_deps["idna"] != ">= 2.5" ||
+		requests_deps["urllib3"] != ">= 1.21.1" ||
+		requests_deps["certifi"] != ">= 2017.4.17" {
+		t.Fatalf("Expected normalized requests dependencies, got %v", requests.Dependencies)
 	}
 
 	if len(requests.Maintainers) != 1 || requests.Maintainers[0].Name != "Kenneth Reitz" {

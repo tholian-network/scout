@@ -15,6 +15,18 @@ func TestAssembleProgram(t *testing.T) {
 		t.Fatal("Expected Python project to be recognized as program")
 	}
 
+	AssembleProgramPackages(&program)
+
+	if len(program.Packages) != 3 {
+		t.Fatalf("Expected 3 program packages, got %d", len(program.Packages))
+	}
+
+	AssembleProgramPackages(&program)
+
+	if len(program.Packages) != 3 {
+		t.Fatalf("Expected packages to be deduplicated, got %d", len(program.Packages))
+	}
+
 	AssembleProgramDependencies(&program)
 
 	if len(program.Dependencies) != 7 {
@@ -31,16 +43,18 @@ func TestAssembleProgram(t *testing.T) {
 		t.Fatalf("Expected sorted program dependencies, got %v", program.Dependencies)
 	}
 
-	AssembleProgramPackages(&program)
-
-	if len(program.Packages) != 3 {
-		t.Fatalf("Expected 3 program packages, got %d", len(program.Packages))
+	if program.Dependencies[0].Version != ">= 3.0" ||
+		program.Dependencies[1].Version != "= 8.1.7" ||
+		program.Dependencies[2].Version != "= 5.0.2" ||
+		program.Dependencies[3].Version != "any" ||
+		program.Dependencies[4].Version != "any" ||
+		program.Dependencies[5].Version != "= 2.31.0" ||
+		program.Dependencies[6].Version != ">= 0.29.0" {
+		t.Fatalf("Expected normalized program dependency versions, got %v", program.Dependencies)
 	}
 
-	AssembleProgramPackages(&program)
-
-	if len(program.Packages) != 3 {
-		t.Fatalf("Expected packages to be deduplicated, got %d", len(program.Packages))
+	if len(program.Unresolved) != 0 {
+		t.Fatalf("Expected no unresolved program dependencies, got %d", len(program.Unresolved))
 	}
 
 }

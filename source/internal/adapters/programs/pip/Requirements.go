@@ -1,6 +1,5 @@
 package pip
 
-import "tholian-core/matchers"
 import "tholian-core/structs"
 import "net/url"
 import "os"
@@ -72,23 +71,7 @@ func addDependencies(result *structs.Package, dependencies map[string]string) {
 	sort.Strings(names)
 
 	for n := 0; n < len(names); n++ {
-
-		name := names[n]
-		version := strings.TrimSpace(dependencies[name])
-
-		if version == "" {
-			version = "*"
-		}
-
-		dependency := matchers.NewPackage()
-		dependency.SetName(name)
-		dependency.SetVersion(version)
-		dependency.SetArchitecture("any")
-		dependency.SetManager("pip")
-		dependency.SetVendor("pip")
-
-		result.AddDependency(dependency)
-
+		addDependency(result, names[n], dependencies[names[n]])
 	}
 
 }
