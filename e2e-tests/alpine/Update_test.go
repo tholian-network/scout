@@ -12,7 +12,7 @@ func TestUpdate(t *testing.T) {
 
 	console, system := harness.NewSystem(t)
 
-	if actions.CollectUpdates(console, system) == false {
+	if len(actions.CollectUpdates(console, system)) == 0 {
 		t.Fatal("Expected CollectUpdates() to succeed")
 	}
 
@@ -20,7 +20,7 @@ func TestUpdate(t *testing.T) {
 		t.Fatalf("Expected updates to contain %s before Update()", config.Package)
 	}
 
-	if actions.Update(console, system) == false {
+	if len(actions.Update(console, system)) == 0 {
 		t.Fatal("Expected Update() to succeed")
 	}
 
@@ -28,7 +28,7 @@ func TestUpdate(t *testing.T) {
 		t.Fatalf("Expected %s to be updated", config.Package)
 	}
 
-	if actions.CollectPackages(console, system) == false {
+	if len(actions.CollectPackages(console, system)) == 0 {
 		t.Fatal("Expected CollectPackages() to succeed")
 	}
 

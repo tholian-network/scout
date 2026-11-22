@@ -10,7 +10,7 @@ func TestSearchUpdates(t *testing.T) {
 	config := harness.FromEnv(t)
 	console, system := harness.NewSystem(t)
 
-	if actions.CollectUpdates(console, system) == false {
+	if len(actions.CollectUpdates(console, system)) == 0 {
 		t.Fatal("Expected CollectUpdates() to succeed")
 	}
 

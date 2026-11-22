@@ -13,7 +13,7 @@ func TestUpdatePackages(t *testing.T) {
 
 	console, system := harness.NewSystem(t)
 
-	if actions.CollectUpdates(console, system) == false {
+	if len(actions.CollectUpdates(console, system)) == 0 {
 		t.Fatal("Expected CollectUpdates() to succeed")
 	}
 
@@ -21,7 +21,7 @@ func TestUpdatePackages(t *testing.T) {
 		matchers.ToPackage(config.Package),
 	}
 
-	if actions.UpdatePackages(console, system, searches) == false {
+	if len(actions.UpdatePackages(console, system, searches)) == 0 {
 		t.Fatalf("Expected UpdatePackages(%s) to succeed", config.Package)
 	}
 
@@ -29,7 +29,7 @@ func TestUpdatePackages(t *testing.T) {
 		t.Fatalf("Expected %s to be updated", config.Package)
 	}
 
-	if actions.CollectPackages(console, system) == false {
+	if len(actions.CollectPackages(console, system)) == 0 {
 		t.Fatal("Expected CollectPackages() to succeed")
 	}
 

@@ -10,7 +10,7 @@ func TestCollectPrograms(t *testing.T) {
 
 	console, system := harness.NewSystem(t)
 
-	if actions.CollectPrograms(console, system) == false {
+	if len(actions.CollectPrograms(console, system)) == 0 {
 		t.Fatal("Expected CollectPrograms() to succeed")
 	}
 

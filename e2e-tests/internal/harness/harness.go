@@ -1,7 +1,6 @@
 package harness
 
 import "tholian-core/structs"
-import "tholian-scout/actions"
 import "os"
 import "os/exec"
 import "testing"
@@ -65,13 +64,12 @@ func NewSystem(t *testing.T) (*structs.Console, *structs.System) {
 	t.Helper()
 
 	console := NewConsole(t)
-	system := actions.Init(console)
 
-	if system == nil {
-		t.Fatal("Expected Init() to return a System")
-	}
+	// The actions populate the System themselves; the harness only needs a
+	// usable zero-value System instead of the removed actions.Init helper.
+	system := structs.NewSystem()
 
-	return console, system
+	return console, &system
 
 }
 

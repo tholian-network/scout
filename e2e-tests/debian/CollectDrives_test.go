@@ -8,7 +8,7 @@ func TestCollectDrives(t *testing.T) {
 
 	console, system := harness.NewSystem(t)
 
-	if actions.CollectDrives(console, system) == false {
+	if len(actions.CollectDrives(console, system)) == 0 {
 		t.Fatal("Expected CollectDrives() to succeed")
 	}
 

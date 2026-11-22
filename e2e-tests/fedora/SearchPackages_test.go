@@ -10,7 +10,7 @@ func TestSearchPackages(t *testing.T) {
 	config := harness.FromEnv(t)
 	console, system := harness.NewSystem(t)
 
-	if actions.CollectPackages(console, system) == false {
+	if len(actions.CollectPackages(console, system)) == 0 {
 		t.Fatal("Expected CollectPackages() to succeed")
 	}
 

@@ -14,7 +14,7 @@ func TestSearchAntiques(t *testing.T) {
 	actions.CollectPackages(console, system)
 	actions.CollectUpdates(console, system)
 
-	if actions.CollectAntiques(console, system) == false {
+	if len(actions.CollectAntiques(console, system)) == 0 {
 		t.Fatal("Expected CollectAntiques() to succeed")
 	}
 

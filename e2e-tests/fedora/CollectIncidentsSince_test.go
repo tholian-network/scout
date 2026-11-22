@@ -10,7 +10,7 @@ func TestCollectIncidentsSince(t *testing.T) {
 	console, system := harness.NewSystem(t)
 	search := matchers.ToDatetime("> 2000-01-01")
 
-	if actions.CollectIncidentsSince(console, system, search) == false {
+	if len(actions.CollectIncidentsSince(console, system, search)) == 0 {
 		t.Fatal("Expected CollectIncidentsSince() to succeed")
 	}
 

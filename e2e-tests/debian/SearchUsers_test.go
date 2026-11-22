@@ -9,7 +9,7 @@ func TestSearchUsers(t *testing.T) {
 
 	console, system := harness.NewSystem(t)
 
-	if actions.CollectUsers(console, system) == false {
+	if len(actions.CollectUsers(console, system)) == 0 {
 		t.Fatal("Expected CollectUsers() to succeed")
 	}
 

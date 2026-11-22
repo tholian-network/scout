@@ -8,7 +8,7 @@ func TestCollectIncidents(t *testing.T) {
 
 	console, system := harness.NewSystem(t)
 
-	if actions.CollectIncidents(console, system) == false {
+	if len(actions.CollectIncidents(console, system)) == 0 {
 		t.Fatal("Expected CollectIncidents() to succeed")
 	}
 

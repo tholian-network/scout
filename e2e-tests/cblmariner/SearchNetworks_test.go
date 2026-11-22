@@ -9,7 +9,7 @@ func TestSearchNetworks(t *testing.T) {
 
 	console, system := harness.NewSystem(t)
 
-	if actions.CollectNetworks(console, system) == false {
+	if len(actions.CollectNetworks(console, system)) == 0 {
 		t.Fatal("Expected CollectNetworks() to succeed")
 	}
 

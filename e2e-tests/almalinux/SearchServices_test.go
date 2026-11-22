@@ -10,7 +10,7 @@ func TestSearchServices(t *testing.T) {
 	config := harness.FromEnv(t)
 	console, system := harness.NewSystem(t)
 
-	if actions.CollectServices(console, system) == false {
+	if len(actions.CollectServices(console, system)) == 0 {
 		t.Fatal("Expected CollectServices() to succeed")
 	}
 

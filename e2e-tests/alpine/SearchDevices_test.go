@@ -9,7 +9,7 @@ func TestSearchDevices(t *testing.T) {
 
 	console, system := harness.NewSystem(t)
 
-	if actions.CollectDevices(console, system) == false {
+	if len(actions.CollectDevices(console, system)) == 0 {
 		t.Skip("No PCI or USB devices are exposed by the container runtime")
 	}
 

@@ -9,19 +9,19 @@ func TestCollectAntiques(t *testing.T) {
 	config := harness.FromEnv(t)
 	console, system := harness.NewSystem(t)
 
-	if actions.CollectServices(console, system) == false {
+	if len(actions.CollectServices(console, system)) == 0 {
 		t.Fatal("Expected CollectServices() to succeed")
 	}
 
-	if actions.CollectPackages(console, system) == false {
+	if len(actions.CollectPackages(console, system)) == 0 {
 		t.Fatal("Expected CollectPackages() to succeed")
 	}
 
-	if actions.CollectUpdates(console, system) == false {
+	if len(actions.CollectUpdates(console, system)) == 0 {
 		t.Fatal("Expected CollectUpdates() to succeed")
 	}
 
-	if actions.CollectAntiques(console, system) == false {
+	if len(actions.CollectAntiques(console, system)) == 0 {
 		t.Fatal("Expected CollectAntiques() to succeed")
 	}
 
