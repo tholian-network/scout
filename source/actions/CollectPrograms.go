@@ -1,8 +1,10 @@
 package actions
 
 import "tholian-core/structs"
+import "tholian-scout/internal/adapters/programs/composer"
 import "tholian-scout/internal/adapters/programs/ldd"
 import "tholian-scout/internal/adapters/programs/npm"
+import "tholian-scout/internal/adapters/programs/pip"
 import "tholian-scout/internal/adapters/programs/proc"
 import "tholian-scout/internal/adapters/programs/procstat"
 import "strconv"
@@ -38,6 +40,16 @@ func CollectPrograms(console *structs.Console, system *structs.System) []structs
 						npm.AssembleProgramDependencies(&program)
 					}
 
+					if composer.SUPPORTED == true && composer.IsProgram(program) {
+						composer.AssembleProgramPackages(&program)
+						composer.AssembleProgramDependencies(&program)
+					}
+
+					if pip.SUPPORTED == true && pip.IsProgram(program) {
+						pip.AssembleProgramPackages(&program)
+						pip.AssembleProgramDependencies(&program)
+					}
+
 					collected = append(collected, program)
 
 				}
@@ -71,6 +83,16 @@ func CollectPrograms(console *structs.Console, system *structs.System) []structs
 					if npm.SUPPORTED == true && npm.IsProgram(program) {
 						npm.AssembleProgramPackages(&program)
 						npm.AssembleProgramDependencies(&program)
+					}
+
+					if composer.SUPPORTED == true && composer.IsProgram(program) {
+						composer.AssembleProgramPackages(&program)
+						composer.AssembleProgramDependencies(&program)
+					}
+
+					if pip.SUPPORTED == true && pip.IsProgram(program) {
+						pip.AssembleProgramPackages(&program)
+						pip.AssembleProgramDependencies(&program)
 					}
 
 					collected = append(collected, program)
