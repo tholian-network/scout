@@ -1,0 +1,19 @@
+{
+  "name": "acme/hostile",
+  "version": "2.0.0",
+  "authors": "Alice Hostile <alice@example.com>",
+  "require": {
+    "string-value": "^1.0",
+    "number-value": 2,
+    "null-value": null,
+    "object-value": {
+      "version": "3.0"
+    },
+    "php": ">=8.0",
+    "ext-json": "*",
+    "": "should-be-skipped"
+  },
+  "require-dev": {
+    "dev-tool": "1.2.3"
+  }
+}

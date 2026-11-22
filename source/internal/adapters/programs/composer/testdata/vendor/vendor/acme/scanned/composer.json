@@ -1,0 +1,8 @@
+{
+  "name": "acme/scanned",
+  "version": "3.0.0",
+  "homepage": "https://example.com/scanned",
+  "require": {
+    "php": ">=8.0"
+  }
+}

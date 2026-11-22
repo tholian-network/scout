@@ -1,0 +1,40 @@
+{
+  "packages": [
+    {
+      "name": "symfony/console",
+      "version": "v6.4.4",
+      "description": "Eases the creation of beautiful and testable command line interfaces",
+      "homepage": "https://symfony.com",
+      "authors": [
+        {
+          "name": "Fabien Potencier",
+          "email": "fabien@symfony.com"
+        }
+      ],
+      "require": {
+        "php": ">=8.1",
+        "ext-mbstring": "*",
+        "symfony/string": "^6.4"
+      }
+    },
+    {
+      "name": "monolog/monolog",
+      "version": "3.5.0",
+      "homepage": "https://github.com/Seldaek/monolog",
+      "authors": [
+        {
+          "name": "Jordi Boggiano",
+          "email": "j.boggiano@seld.be"
+        }
+      ],
+      "require": {
+        "php": ">=8.1",
+        "psr/log": "^2.0 || ^3.0"
+      }
+    }
+  ],
+  "dev": true,
+  "dev-package-names": [
+    "phpunit/phpunit"
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "packages": [
+    {
+      "name": "acme/locked",
+      "version": "2.1.0",
+      "require": {
+        "php": ">=8.0",
+        "psr/log": "^3.0"
+      }
+    }
+  ],
+  "packages-dev": [
+    {
+      "name": "acme/dev-tool",
+      "version": "1.0.0"
+    }
+  ]
+}
