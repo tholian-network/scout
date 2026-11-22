@@ -1,0 +1,29 @@
+{
+  "name": "example-service",
+  "description": "Example node.js service",
+  "version": "1.2.3",
+  "private": false,
+  "homepage": "https://example.com/service",
+  "author": "Alice Example <alice@example.com>",
+  "maintainers": [
+    "Bob Example <bob@example.com>",
+    {
+      "name": "Carol Example",
+      "email": "carol@example.com",
+      "url": "https://example.com/carol"
+    }
+  ],
+  "contributors": [
+    {
+      "name": "Dave Example",
+      "email": "dave@example.com"
+    }
+  ],
+  "dependencies": {
+    "left-pad": "^1.3.0",
+    "@scope/pkg": "~2.0.0"
+  },
+  "devDependencies": {
+    "typescript": "5.4.2"
+  }
+}

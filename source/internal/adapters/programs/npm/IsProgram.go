@@ -1,7 +1,6 @@
 package npm
 
 import "tholian-core/structs"
-import "os"
 import "strings"
 
 func IsProgram(program structs.Program) bool {
@@ -10,10 +9,7 @@ func IsProgram(program structs.Program) bool {
 
 	if program.Folder != "" && strings.HasPrefix(program.Folder, "/") {
 
-		_, err1 := os.Stat(program.Folder + "/package.json")
-		_, err2 := os.Stat(program.Folder + "/node_modules")
-
-		if err1 == nil && err2 == nil {
+		if isFile(program.Folder+"/package.json") && isDirectory(program.Folder+"/node_modules") {
 			result = true
 		}
 

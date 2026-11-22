@@ -2,6 +2,7 @@ package npm
 
 import "tholian-core/structs"
 import "os"
+import "sort"
 import "strings"
 
 func CollectPackages(folder string) []structs.Package {
@@ -9,52 +10,71 @@ func CollectPackages(folder string) []structs.Package {
 	var collected []structs.Package
 
 	if SUPPORTED == true && folder != "" && strings.HasPrefix(folder, "/") {
+		collected = collectPackages(folder)
+	}
 
-		stat1, err1 := os.Stat(folder + "/node_modules")
+	return collected
 
-		if err1 == nil && stat1.IsDir() == true {
+}
 
-			entries, err2 := os.ReadDir(folder + "/node_modules")
+func collectPackages(folder string) []structs.Package {
 
-			if err2 == nil {
+	collected := make([]structs.Package, 0)
+
+	if folder != "" && strings.HasPrefix(folder, "/") {
+
+		modules := folder + "/node_modules"
+
+		if isDirectory(modules) {
+
+			entries, err := os.ReadDir(modules)
+
+			if err == nil {
 
 				for e := 0; e < len(entries); e++ {
 
 					name := entries[e].Name()
 
-					if entries[e].IsDir() {
+					if strings.HasPrefix(name, ".") {
+						continue
+					}
 
-						if strings.HasPrefix(name, ".") {
-							// Do Nothing
-						} else if strings.HasPrefix(name, "@") {
+					if strings.HasPrefix(name, "@") {
 
-							subentries, err3 := os.ReadDir(folder + "/node_modules/" + name)
+						if isDirectory(modules + "/" + name) {
 
-							if err3 == nil {
+							subentries, err := os.ReadDir(modules + "/" + name)
+
+							if err == nil {
 
 								for s := 0; s < len(subentries); s++ {
 
-									name := entries[e].Name() + "/" + subentries[s].Name()
-									manifest := NewManifest(folder + "/node_modules/" + name + "/package.json")
-									pkg := manifest.ToPackage()
+									subname := subentries[s].Name()
 
-									if pkg.Name != "" && pkg.Version.IsValid() {
-										collected = append(collected, pkg)
+									if strings.HasPrefix(subname, ".") {
+										continue
+									}
+
+									path := modules + "/" + name + "/" + subname
+
+									if isDirectory(path) {
+										manifest := NewManifest(path + "/package.json")
+										appendPackage(&collected, manifest.ToPackage())
 									}
 
 								}
 
 							}
 
-						} else {
+						}
 
-							manifest := NewManifest(folder + "/node_modules/" + name + "/package.json")
-							pkg := manifest.ToPackage()
+					} else {
 
-							if pkg.Name != "" && pkg.Version.IsValid() {
-								collected = append(collected, pkg)
-							}
+						path := modules + "/" + name
 
+						if isDirectory(path) {
+							manifest := NewManifest(path + "/package.json")
+							appendPackage(&collected, manifest.ToPackage())
 						}
 
 					}
@@ -67,6 +87,39 @@ func CollectPackages(folder string) []structs.Package {
 
 	}
 
+	sort.Slice(collected, func(a int, b int) bool {
+
+		if collected[a].Name == collected[b].Name {
+			return collected[a].Version.String() < collected[b].Version.String()
+		}
+
+		return collected[a].Name < collected[b].Name
+
+	})
+
 	return collected
+
+}
+
+func appendPackage(collected *[]structs.Package, pkg structs.Package) {
+
+	if pkg.Name != "" && pkg.Version.IsValid() {
+
+		found := false
+
+		for c := 0; c < len(*collected); c++ {
+
+			if (*collected)[c].Equal(pkg) {
+				found = true
+				break
+			}
+
+		}
+
+		if found == false {
+			*collected = append(*collected, pkg)
+		}
+
+	}
 
 }
