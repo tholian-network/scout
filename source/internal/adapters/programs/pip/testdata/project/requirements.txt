@@ -1,0 +1,13 @@
+# Main dependencies
+requests==2.31.0
+Flask >= 3.0, < 4.0  # web framework
+uvicorn[standard]~=0.29.0 ; python_version >= "3.8"
+django==5.0.2 \
+    --hash=sha256:abcdef
+-r requirements/base.txt
+-c requirements/constraints.txt
+--index-url https://pypi.org/simple
+--find-links ./wheels
+-e git+https://example.com/repo.git#egg=editable-pkg
+local-pkg @ https://example.com/local-pkg-1.0.tar.gz
+https://example.com/archive/unnamed-1.0.tar.gz

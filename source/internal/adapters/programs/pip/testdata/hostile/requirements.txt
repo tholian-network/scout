@@ -1,0 +1,12 @@
+# comment with URL https://example.com/#fragment
+Requests==2.31.0
+weird-name @ https://example.com/pkg.whl#egg=weird-name
+-e .
+--index-url https://example.com/simple
+--extra-index-url=https://example.com/extra
+--hash=sha256:deadbeef
+local-path @ file:///tmp/local.whl
+foo; python_version < "3.8"
+bar ; extra == "test"
+baz==1.0 # trailing comment
+# full comment
