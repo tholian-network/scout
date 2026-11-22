@@ -1,0 +1,7 @@
+{
+  "name": "acme/missing-parent",
+  "version": "1.0.0",
+  "require": {
+    "acme/missing": "1.0 || 2.0"
+  }
+}

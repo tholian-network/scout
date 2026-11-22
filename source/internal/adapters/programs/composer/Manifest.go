@@ -1,6 +1,5 @@
 package composer
 
-import "tholian-core/matchers"
 import "tholian-core/structs"
 import "tholian-core/types"
 import "encoding/json"
@@ -128,100 +127,64 @@ func (manifest *Manifest) ToPackage() structs.Package {
 		result.AddMaintainer(manifest.Authors[a])
 	}
 
-	addDependencies(&result, manifest.Dependencies)
-	addDependencies(&result, manifest.DevDependencies)
-	addConflicts(&result, manifest.Conflicts)
-	addReplaces(&result, manifest.Replaces)
-	addProvides(&result, manifest.Provides)
+	addDependencies(&result, manifest.Dependencies, manifest.Version)
+	addDependencies(&result, manifest.DevDependencies, manifest.Version)
+	addConflicts(&result, manifest.Conflicts, manifest.Version)
+	addReplaces(&result, manifest.Replaces, manifest.Version)
+	addProvides(&result, manifest.Provides, manifest.Version)
 	setManifestDatetime(manifest.file, &result)
 
 	return result
 
 }
 
-func addDependencies(result *structs.Package, dependencies map[string]string) {
+func addDependencies(result *structs.Package, dependencies map[string]string, own_version string) {
 
 	names := sortedNames(dependencies)
 
 	for n := 0; n < len(names); n++ {
-
-		name := names[n]
-		version := dependencyVersion(dependencies[name])
-
-		dependency := matchers.NewPackage()
-		dependency.SetName(name)
-		dependency.SetVersion(version)
-		dependency.SetArchitecture("any")
-		dependency.SetManager("composer")
-		dependency.SetVendor("composer")
-
-		result.AddDependency(dependency)
-
+		addDependency(result, names[n], dependencies[names[n]], own_version)
 	}
 
 }
 
-func addConflicts(result *structs.Package, conflicts map[string]string) {
+func addConflicts(result *structs.Package, conflicts map[string]string, own_version string) {
 
 	names := sortedNames(conflicts)
 
 	for n := 0; n < len(names); n++ {
 
-		name := names[n]
-		version := dependencyVersion(conflicts[name])
-
-		conflict := matchers.NewPackage()
-		conflict.SetName(name)
-		conflict.SetVersion(version)
-		conflict.SetArchitecture("any")
-		conflict.SetManager("composer")
-		conflict.SetVendor("composer")
-
-		result.AddConflict(conflict)
+		if version, ok := normalizeRelation(conflicts[names[n]], own_version); ok == true {
+			result.AddConflict(newMatcher(names[n], version))
+		}
 
 	}
 
 }
 
-func addReplaces(result *structs.Package, replaces map[string]string) {
+func addReplaces(result *structs.Package, replaces map[string]string, own_version string) {
 
 	names := sortedNames(replaces)
 
 	for n := 0; n < len(names); n++ {
 
-		name := names[n]
-		version := dependencyVersion(replaces[name])
-
-		replace := matchers.NewPackage()
-		replace.SetName(name)
-		replace.SetVersion(version)
-		replace.SetArchitecture("any")
-		replace.SetManager("composer")
-		replace.SetVendor("composer")
-
-		result.AddReplace(replace)
+		if version, ok := normalizeRelation(replaces[names[n]], own_version); ok == true {
+			result.AddReplace(newMatcher(names[n], version))
+		}
 
 	}
 
 }
 
-func addProvides(result *structs.Package, provides map[string]string) {
+func addProvides(result *structs.Package, provides map[string]string, own_version string) {
 
 	names := sortedNames(provides)
 
 	for n := 0; n < len(names); n++ {
 
-		name := names[n]
-		version := dependencyVersion(provides[name])
-
-		provide := matchers.NewPackage()
-		provide.SetName(name)
-		provide.SetVersion(version)
-		provide.SetArchitecture("any")
-		provide.SetManager("composer")
-		provide.SetVendor("composer")
-
-		result.AddProvide(provide)
+		if version, ok := normalizeRelation(provides[names[n]], own_version); ok == true {
+			result.AddProvide(newMatcher(names[n], version))
+		}
 
 	}
 
@@ -244,18 +207,6 @@ func sortedNames(dependencies map[string]string) []string {
 	sort.Strings(names)
 
 	return names
-
-}
-
-func dependencyVersion(value string) string {
-
-	value = strings.TrimSpace(value)
-
-	if value == "" {
-		return "*"
-	}
-
-	return value
 
 }
 

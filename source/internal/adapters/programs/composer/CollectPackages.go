@@ -42,6 +42,10 @@ func collectPackages(folder string) []structs.Package {
 
 	}
 
+	for c := 0; c < len(collected); c++ {
+		collected[c].ResolveDependencies(collected)
+	}
+
 	sort.Slice(collected, func(a int, b int) bool {
 
 		if collected[a].Name == collected[b].Name {
@@ -232,10 +236,10 @@ func packageFromSchema(schema map[string]json.RawMessage, folder string, source 
 		result.AddMaintainer(authors[a])
 	}
 
-	addDependencies(&result, decodeDependencyMap(schema["require"]))
-	addConflicts(&result, decodeDependencyMap(schema["conflict"]))
-	addReplaces(&result, decodeDependencyMap(schema["replace"]))
-	addProvides(&result, decodeDependencyMap(schema["provide"]))
+	addDependencies(&result, decodeDependencyMap(schema["require"]), version)
+	addConflicts(&result, decodeDependencyMap(schema["conflict"]), version)
+	addReplaces(&result, decodeDependencyMap(schema["replace"]), version)
+	addProvides(&result, decodeDependencyMap(schema["provide"]), version)
 	setPackageDatetime(folder, name, source, &result)
 
 	return result

@@ -15,6 +15,18 @@ func TestAssembleProgram(t *testing.T) {
 		t.Fatal("Expected composer project to be recognized as program")
 	}
 
+	AssembleProgramPackages(&program)
+
+	if len(program.Packages) != 2 {
+		t.Fatalf("Expected 2 program packages, got %d", len(program.Packages))
+	}
+
+	AssembleProgramPackages(&program)
+
+	if len(program.Packages) != 2 {
+		t.Fatalf("Expected packages to be deduplicated, got %d", len(program.Packages))
+	}
+
 	AssembleProgramDependencies(&program)
 
 	if len(program.Dependencies) != 3 {
@@ -27,16 +39,14 @@ func TestAssembleProgram(t *testing.T) {
 		t.Fatalf("Expected deterministic program dependencies, got %v", program.Dependencies)
 	}
 
-	AssembleProgramPackages(&program)
-
-	if len(program.Packages) != 2 {
-		t.Fatalf("Expected 2 program packages, got %d", len(program.Packages))
+	if program.Dependencies[0].Version != ">= 3.5" ||
+		program.Dependencies[1].Version != ">= 6.4" ||
+		program.Dependencies[2].Version != ">= 10.5" {
+		t.Fatalf("Expected normalized program dependency versions, got %v", program.Dependencies)
 	}
 
-	AssembleProgramPackages(&program)
-
-	if len(program.Packages) != 2 {
-		t.Fatalf("Expected packages to be deduplicated, got %d", len(program.Packages))
+	if len(program.Unresolved) != 0 {
+		t.Fatalf("Expected no unresolved program dependencies, got %d", len(program.Unresolved))
 	}
 
 }

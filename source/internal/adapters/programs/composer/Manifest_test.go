@@ -62,6 +62,12 @@ func TestManifestStandard(t *testing.T) {
 		t.Fatalf("Expected deterministic dependency order, got %v", pkg.Dependencies)
 	}
 
+	if pkg.Dependencies[0].Version != ">= 3.5" ||
+		pkg.Dependencies[1].Version != ">= 6.4" ||
+		pkg.Dependencies[2].Version != ">= 10.5" {
+		t.Fatalf("Expected normalized dependency versions, got %v", pkg.Dependencies)
+	}
+
 	if len(pkg.Conflicts) != 1 || pkg.Conflicts[0].Name != "acme/old-service" {
 		t.Fatalf("Expected conflict, got %v", pkg.Conflicts)
 	}
@@ -104,11 +110,11 @@ func TestManifestHostileTypes(t *testing.T) {
 		found[pkg.Dependencies[d].Name] = pkg.Dependencies[d].Version
 	}
 
-	if found["string-value"] != "^1.0" {
+	if found["string-value"] != ">= 1.0" {
 		t.Fatalf("Expected string dependency, got %s", found["string-value"])
 	}
 
-	if found["number-value"] != "2" {
+	if found["number-value"] != "= 2" {
 		t.Fatalf("Expected numeric dependency, got %s", found["number-value"])
 	}
 
@@ -116,7 +122,7 @@ func TestManifestHostileTypes(t *testing.T) {
 		t.Fatalf("Expected null dependency version any, got %s", found["null-value"])
 	}
 
-	if found["object-value"] != "3.0" {
+	if found["object-value"] != "= 3.0" {
 		t.Fatalf("Expected object dependency version, got %s", found["object-value"])
 	}
 
